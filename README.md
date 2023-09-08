@@ -2,9 +2,7 @@
 
 We present a fair method to use the Sui blockchain to conduct a 50 / 50 game of chance. We model the example after a 2-sided coin flip with a 50% chance for each outcome, Tails or Heads.
 
-Kostas Chalkias, Chief Cryptographer at Mysten Labs, presented the theory behind this project at [GAM3R 2022](https://gam3r.org/).
-
-You can find the source code for the smart contracts that executes on Sui Testnet in the [satoshi_flip](satoshi_flip/sources/satoshi_flip.move) folder.
+Kostas Chalkias, Chief Cryptographer at Mysten Labs, presented the theory behind this project at [GAM3R 2022](https://docs.google.com/presentation/d/1a9wddWhqKM4GXMV1UrhrpaH1sBMUxZWI/edit?usp=sharing&ouid=110032463750803153525&rtpof=true&sd=true).
 
 ## Satoshi Coin Flip Modules
 
@@ -27,10 +25,10 @@ Defines the game object and provides methods to create, end and dispute a game.
 ### `mev_attack_resistant_single_player_satoshi.move`
 Similar to the `single_player_satoshi` module, but with the addition of the `submit_guess` function that is used to submit the guess and VRF input in a separate transaction.<br/>
 It also enforces status checks to ensure that the game is in the correct state before submit, end and dispute functions are called. <br/>
-More details about the differences between the two versions can be found in the [Satoshi Coin Flip Flavours](#satoshi-coin-flip-flavours) section.
-## Satoshi Coin Flip Flavours
+More details about the differences between the two versions can be found in the [Satoshi Coin Flip Flavors](#satoshi-coin-flip-flavors) section.
+## Satoshi Coin Flip Flavors
 
-This repo contains two versions of the Satoshi Coin Flip contract. This enables use cases to implement whichever approach fits them best. UX and security have to be weighted in order to take an informed descision. 
+This repo contains two versions of the Satoshi Coin Flip contract. This enables use cases to implement whichever approach fits them best. UX and security have to be weighted in order to take an informed decision. 
 
 The two versions are:
 1. [**Single Player Satoshi**](#single-player-satoshi-smart-contract-flow): Provides better UX (1 user transaction per game) but is not as secure against a specific MEV attack (explained in the [MEV attack](#the-mev-attack) section).
@@ -58,7 +56,7 @@ Fairness is ensured and verifiable by:
  1. Time-locking the game so that it is obliged to end after X number of epochs (X=7 in our example).
 
 #### Global Architecture Diagram
-***Note:** The high level architecture remains the same for both Satoshi Coin Flip flavours.*
+***Note:** The high level architecture remains the same for both Satoshi Coin Flip flavors.*
 
 ![Global Proposed Architecture](/diagrams/Global%20Architecture%20Diagram.png)
 
@@ -103,6 +101,14 @@ The sample UI demonstrates our fairness claim: The human player can check the ob
 
 ## Proposed Back-end Service
 
-For the purposes of signing and revealing the beacon the house's private key must be kept somewhere safe. For this reason we propose a back-end service that is capable of hiding the private key from end users and is able to cleverly determine when to reveal the beacon: only after a game has been created. This can be checked by awaiting for the transaction block containing the gameId (or for the case of the MEV attack resistant version upon guess submition).
+For the purposes of signing and revealing the beacon the house's private key must be kept somewhere safe. For this reason we propose a back-end service that is capable of hiding the private key from end users and is able to cleverly determine when to reveal the beacon: only after a game has been created. This can be checked by awaiting for the transaction block containing the gameId (or for the case of the MEV attack resistant version upon guess submission).
 
 Another useful aspect of the back-end is to make the user experience better by initiating the end game transaction as the house. This way games that might not be closed can also be tracked and closed later with additional services  / cron jobs.
+
+## Disclaimer
+
+"Time-locked Satoshi Coin Flip" is intended to serve as general reference, is provided for informational purposes only and does not provide gambling endorsement, advice or recommendations. Users are responsible for their own gambling activities and decisions, including complying with applicable laws and regulations relating to gambling. We make no representations or warranties of any kind, express or implied, about the completeness, accuracy, reliability, suitability, or availability of the information provided by the "Time-locked Satoshi Coin Flip". We are not responsible for any legal consequences users of "Time-locked Satoshi Coin Flip" may face.
+
+## License
+
+"Time-locked Satoshi Coin Flip" is released under the [Apache 2.0 License](LICENSE).

@@ -1,0 +1,12 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# production
+**/build
+
+# debug
+**/sui.log.*
+satoshi_flip/Move.lock
+
+# coverage files
+.coverage_map.mvcov
+.trace

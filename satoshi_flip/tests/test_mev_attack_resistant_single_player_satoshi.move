@@ -3,14 +3,13 @@
 
 #[test_only]
 module satoshi_flip::test_mev_attack_resistant_single_player_satoshi {
-    use sui::coin::{Self, Coin};
+    use sui::coin::Coin;
     use sui::sui::SUI;
     use sui::test_scenario::{Self};
-    use sui::object::{Self};
 
     use satoshi_flip::test_common::{Self as tc};
     use satoshi_flip::mev_attack_resistant_single_player_satoshi::{Self as sps};
-    use satoshi_flip::house_data::{Self as hd, HouseData};
+    use satoshi_flip::house_data::HouseData;
 
     const EWrongState: u64 = 7;
     const EWrongPlayerBalanceAfterLoss: u64 = 6;
@@ -36,7 +35,7 @@ module satoshi_flip::test_mev_attack_resistant_single_player_satoshi {
         let house = @0xCAFE;
         let player = @0xDECAF;
 
-        let scenario_val = test_scenario::begin(house);
+        let mut scenario_val = test_scenario::begin(house);
         let scenario = &mut scenario_val;
         {
             tc::fund_addresses(scenario, house, player, tc::get_initial_house_balance(), tc::get_initial_player_balance());
@@ -49,11 +48,11 @@ module satoshi_flip::test_mev_attack_resistant_single_player_satoshi {
         let game_id = tc::mev_create_game_counter_and_submit_stake(scenario, player, tc::get_min_stake());
 
         // Check that the game is in funds sumbitted state.
-        test_scenario::next_tx(scenario, player);
+        scenario.next_tx(player);
         {
-            let house_data = test_scenario::take_shared<HouseData>(scenario);
-            let game = sps::borrow_game( &house_data, game_id);
-            assert!(sps::status(game) == FUNDS_SUBMITTED_STATE, EWrongState);
+            let house_data = scenario.take_shared<HouseData>();
+            let game = sps::borrow_game(&house_data, game_id);
+            assert!(game.status() == FUNDS_SUBMITTED_STATE, EWrongState);
             test_scenario::return_shared(house_data);
         };
 
@@ -62,11 +61,11 @@ module satoshi_flip::test_mev_attack_resistant_single_player_satoshi {
 
 
         // Check that the game is in guess submitted state.
-        test_scenario::next_tx(scenario, player);
+        scenario.next_tx(player);
         {
-            let house_data = test_scenario::take_shared<HouseData>(scenario);
+            let house_data = scenario.take_shared<HouseData>();
             let game = sps::borrow_game(&house_data, game_id);
-            assert!(sps::status(game) == GUESS_SUBMITTED_STATE, EWrongState);
+            assert!(game.status() == GUESS_SUBMITTED_STATE, EWrongState);
             test_scenario::return_shared(house_data);
         };
 
@@ -74,19 +73,19 @@ module satoshi_flip::test_mev_attack_resistant_single_player_satoshi {
         tc::mev_end_game(scenario, game_id, house, true);
 
         // Check that the outcome, player and house data balances are correct.
-        test_scenario::next_tx(scenario, player);
+        scenario.next_tx(player);
         {
-            let house_data = test_scenario::take_shared<HouseData>(scenario);
-            let player_coin = test_scenario::take_from_sender<Coin<SUI>>(scenario);
+            let house_data = scenario.take_shared<HouseData>();
+            let player_coin = scenario.take_from_sender<Coin<SUI>>();
             // Ensure player has correct balance.
-            assert!(coin::value(&player_coin) == tc::get_initial_player_balance() - tc::get_min_stake(), EWrongPlayerBalanceAfterLoss);
+            assert!(player_coin.value() == tc::get_initial_player_balance() - tc::get_min_stake(), EWrongPlayerBalanceAfterLoss);
             // Ensure house has correct balance.
-            assert!(hd::balance(&house_data) == tc::get_initial_house_balance() + tc::get_min_stake(), EWrongHouseBalanceAfterWin);
-            test_scenario::return_to_sender(scenario, player_coin);
+            assert!(house_data.balance() == tc::get_initial_house_balance() + tc::get_min_stake(), EWrongHouseBalanceAfterWin);
+            scenario.return_to_sender(player_coin);
             test_scenario::return_shared(house_data);
         };
 
-        test_scenario::end(scenario_val);
+        scenario_val.end();
     }
 
     #[test]
@@ -94,7 +93,7 @@ module satoshi_flip::test_mev_attack_resistant_single_player_satoshi {
         let house = @0xCAFE;
         let player = @0xDECAF;
 
-        let scenario_val = test_scenario::begin(house);
+        let mut scenario_val = test_scenario::begin(house);
         let scenario = &mut scenario_val;
         {
             tc::fund_addresses(scenario, house, player, tc::get_initial_house_balance(), tc::get_initial_player_balance());
@@ -113,20 +112,20 @@ module satoshi_flip::test_mev_attack_resistant_single_player_satoshi {
         tc::mev_end_game(scenario, game_id, house, true);
 
         // Check that player and house data balances are correct.
-        test_scenario::next_tx(scenario, player);
+        scenario.next_tx(player);
         {
-            let house_data = test_scenario::take_shared<HouseData>(scenario);
-            let player_coin = test_scenario::take_from_sender<Coin<SUI>>(scenario);
+            let house_data = scenario.take_shared<HouseData>();
+            let player_coin = scenario.take_from_sender<Coin<SUI>>();
             // Ensure house balance and fees are correct.
-            assert!(hd::balance(&house_data) == tc::get_initial_house_balance() - tc::get_min_stake(), EWrongHouseBalanceAfterLoss);
-            assert!(hd::fees(&house_data) == fees, EWrongHouseFees);
+            assert!(house_data.balance() == tc::get_initial_house_balance() - tc::get_min_stake(), EWrongHouseBalanceAfterLoss);
+            assert!(house_data.fees() == fees, EWrongHouseFees);
             // Ensure player received a new coin with the correct balance.
-            assert!(coin::value(&player_coin) == tc::get_min_stake()*2 - fees, EWrongPlayerBalanceAfterWin);
-            test_scenario::return_to_sender(scenario, player_coin);
+            assert!(player_coin.value() == tc::get_min_stake()*2 - fees, EWrongPlayerBalanceAfterWin);
+            scenario.return_to_sender(player_coin);
             test_scenario::return_shared(house_data);
         };
 
-        test_scenario::end(scenario_val);
+        scenario_val.end();
     }
 
     #[test]
@@ -134,7 +133,7 @@ module satoshi_flip::test_mev_attack_resistant_single_player_satoshi {
         let house = @0xCAFE;
         let player = @0xDECAF;
 
-        let scenario_val = test_scenario::begin(house);
+        let mut scenario_val = test_scenario::begin(house);
         let scenario = &mut scenario_val;
         {
             tc::fund_addresses(scenario, house, player, tc::get_initial_house_balance(), tc::get_initial_player_balance());
@@ -150,23 +149,23 @@ module satoshi_flip::test_mev_attack_resistant_single_player_satoshi {
         tc::advance_epochs(scenario, house, EPOCHS_TO_CHALLENGE);
 
         // Player cancels the game.
-        test_scenario::next_tx(scenario, player);
+        scenario.next_tx(player);
         {
-            let house_data = test_scenario::take_shared<HouseData>(scenario);
-            let ctx = test_scenario::ctx(scenario);
+            let mut house_data = scenario.take_shared<HouseData>();
+            let ctx = scenario.ctx();
             sps::dispute_and_win(&mut house_data, game_id, ctx);
             test_scenario::return_shared(house_data);
         };
 
         // Check that the player received the total stake on dispute.
-        test_scenario::next_tx(scenario, player);
+        scenario.next_tx(player);
         {
-            let dispute_coin = test_scenario::take_from_sender<Coin<SUI>>(scenario);
-            assert!(coin::value(&dispute_coin) == tc::get_min_stake()*2, EWrongCoinBalance);
-            test_scenario::return_to_sender(scenario, dispute_coin);
+            let dispute_coin = scenario.take_from_sender<Coin<SUI>>();
+            assert!(dispute_coin.value() == tc::get_min_stake()*2, EWrongCoinBalance);
+            scenario.return_to_sender(dispute_coin);
         };
 
-        test_scenario::end(scenario_val);
+        scenario_val.end();
     }
 
     // ------------- Rainy day tests -------------
@@ -177,7 +176,7 @@ module satoshi_flip::test_mev_attack_resistant_single_player_satoshi {
         let house = @0xCAFE;
         let player = @0xDECAF;
 
-        let scenario_val = test_scenario::begin(house);
+        let mut scenario_val = test_scenario::begin(house);
         let scenario = &mut scenario_val;
         {
             tc::fund_addresses(scenario, house, player, tc::get_initial_house_balance(), tc::get_initial_player_balance());
@@ -192,7 +191,7 @@ module satoshi_flip::test_mev_attack_resistant_single_player_satoshi {
         // House ends the game with the wrong BLS signature.
         tc::mev_end_game(scenario, game_id, house, false);
 
-        test_scenario::end(scenario_val);
+        scenario_val.end();
     }
 
     #[test]
@@ -201,7 +200,7 @@ module satoshi_flip::test_mev_attack_resistant_single_player_satoshi {
         let house = @0xCAFE;
         let player = @0xDECAF;
 
-        let scenario_val = test_scenario::begin(house);
+        let mut scenario_val = test_scenario::begin(house);
         let scenario = &mut scenario_val;
         {
             tc::fund_addresses(scenario, house, player, tc::get_initial_house_balance(), tc::get_initial_player_balance());
@@ -214,7 +213,7 @@ module satoshi_flip::test_mev_attack_resistant_single_player_satoshi {
         // Player submits an invalid guess.
         tc::mev_submit_guess(scenario, game_id, player, true, false);
 
-        test_scenario::end(scenario_val);
+        scenario_val.end();
     }
 
     #[test]
@@ -223,7 +222,7 @@ module satoshi_flip::test_mev_attack_resistant_single_player_satoshi {
         let house = @0xCAFE;
         let player = @0xDECAF;
 
-        let scenario_val = test_scenario::begin(house);
+        let mut scenario_val = test_scenario::begin(house);
         let scenario = &mut scenario_val;
         {
             tc::fund_addresses(scenario, house, player, tc::get_initial_house_balance(), tc::get_initial_player_balance());
@@ -234,7 +233,7 @@ module satoshi_flip::test_mev_attack_resistant_single_player_satoshi {
         // Player creates his/her counter NFT and the game but with insufficient funds.
         tc::mev_create_game_counter_and_submit_stake(scenario, player, 100);
 
-        test_scenario::end(scenario_val);
+        scenario_val.end();
     }
 
     #[test]
@@ -243,7 +242,7 @@ module satoshi_flip::test_mev_attack_resistant_single_player_satoshi {
         let house = @0xCAFE;
         let player = @0xDECAF;
 
-        let scenario_val = test_scenario::begin(house);
+        let mut scenario_val = test_scenario::begin(house);
         let scenario = &mut scenario_val;
         {
             // Fund player with a higher amount than the max stake.
@@ -255,7 +254,7 @@ module satoshi_flip::test_mev_attack_resistant_single_player_satoshi {
         // Player creates his/her counter NFT and the game. Submitted stake exceeds limit.
         tc::mev_create_game_counter_and_submit_stake(scenario, player, tc::get_max_stake() + tc::get_min_stake());
 
-        test_scenario::end(scenario_val);
+        scenario_val.end();
     }
 
 
@@ -265,7 +264,7 @@ module satoshi_flip::test_mev_attack_resistant_single_player_satoshi {
         let house = @0xCAFE;
         let player = @0xDECAF;
 
-        let scenario_val = test_scenario::begin(house);
+        let mut scenario_val = test_scenario::begin(house);
         let scenario = &mut scenario_val;
         {
             // Fund house with insufficient balance.
@@ -276,7 +275,7 @@ module satoshi_flip::test_mev_attack_resistant_single_player_satoshi {
 
         tc::mev_create_game_counter_and_submit_stake(scenario, player, tc::get_min_stake());
 
-        test_scenario::end(scenario_val);
+        scenario_val.end();
     }
 
     #[test]
@@ -285,7 +284,7 @@ module satoshi_flip::test_mev_attack_resistant_single_player_satoshi {
         let house = @0xCAFE;
         let player = @0xDECAF;
 
-        let scenario_val = test_scenario::begin(house);
+        let mut scenario_val = test_scenario::begin(house);
         let scenario = &mut scenario_val;
         {
             tc::fund_addresses(scenario, house, player, tc::get_initial_house_balance(), tc::get_initial_player_balance());
@@ -298,15 +297,15 @@ module satoshi_flip::test_mev_attack_resistant_single_player_satoshi {
         tc::mev_submit_guess(scenario, game_id, player, false, true);
 
         // Player attempts to cancel the game.
-        test_scenario::next_tx(scenario, player);
+        scenario.next_tx(player);
         {
-            let house_data = test_scenario::take_shared<HouseData>(scenario);
-            let ctx = test_scenario::ctx(scenario);
+            let mut house_data = scenario.take_shared<HouseData>();
+            let ctx = scenario.ctx();
             sps::dispute_and_win(&mut house_data, game_id, ctx);
             test_scenario::return_shared(house_data);
         };
 
-        test_scenario::end(scenario_val);
+        scenario_val.end();
     }
 
     #[test]
@@ -315,7 +314,7 @@ module satoshi_flip::test_mev_attack_resistant_single_player_satoshi {
         let house = @0xCAFE;
         let player = @0xDECAF;
 
-        let scenario_val = test_scenario::begin(house);
+        let mut scenario_val = test_scenario::begin(house);
         let scenario = &mut scenario_val;
         {
             tc::fund_addresses(scenario, house, player, tc::get_initial_house_balance(), tc::get_initial_player_balance());
@@ -329,24 +328,24 @@ module satoshi_flip::test_mev_attack_resistant_single_player_satoshi {
 
         tc::advance_epochs(scenario, house, EPOCHS_TO_CHALLENGE);
 
-        test_scenario::next_tx(scenario, player);
+        scenario.next_tx(player);
         {
-            let house_data = test_scenario::take_shared<HouseData>(scenario);
-            let ctx = test_scenario::ctx(scenario);
+            let mut house_data = scenario.take_shared<HouseData>();
+            let ctx = scenario.ctx();
             sps::dispute_and_win(&mut house_data, game_id, ctx);
             test_scenario::return_shared(house_data);
         };
 
         // Player tries to cancel game again.
-        test_scenario::next_tx(scenario, player);
+        scenario.next_tx(player);
         {
-            let house_data = test_scenario::take_shared<HouseData>(scenario);
-            let ctx = test_scenario::ctx(scenario);
+            let mut house_data = scenario.take_shared<HouseData>();
+            let ctx = scenario.ctx();
             sps::dispute_and_win(&mut house_data, game_id, ctx);
             test_scenario::return_shared(house_data);
         };
 
-        test_scenario::end(scenario_val);
+        scenario_val.end();
     }
 
     #[test]
@@ -355,7 +354,7 @@ module satoshi_flip::test_mev_attack_resistant_single_player_satoshi {
         let house = @0xCAFE;
         let player = @0xDECAF;
 
-        let scenario_val = test_scenario::begin(house);
+        let mut scenario_val = test_scenario::begin(house);
         let scenario = &mut scenario_val;
         {
             tc::fund_addresses(scenario, house, player, tc::get_initial_house_balance(), tc::get_initial_player_balance());
@@ -372,15 +371,15 @@ module satoshi_flip::test_mev_attack_resistant_single_player_satoshi {
         tc::mev_end_game(scenario, game_id, house, true);
 
         // Player tries to cancel game after it has already ended.
-        test_scenario::next_tx(scenario, player);
+        scenario.next_tx(player);
         {
-            let house_data = test_scenario::take_shared<HouseData>(scenario);
-            let ctx = test_scenario::ctx(scenario);
+            let mut house_data = scenario.take_shared<HouseData>();
+            let ctx = scenario.ctx();
             sps::dispute_and_win(&mut house_data, game_id, ctx);
             test_scenario::return_shared(house_data);
         };
 
-        test_scenario::end(scenario_val);
+        scenario_val.end();
     }
 
     #[test]
@@ -389,7 +388,7 @@ module satoshi_flip::test_mev_attack_resistant_single_player_satoshi {
         let house = @0xCAFE;
         let player = @0xDECAF;
 
-        let scenario_val = test_scenario::begin(house);
+        let mut scenario_val = test_scenario::begin(house);
         let scenario = &mut scenario_val;
         {
             tc::fund_addresses(scenario, house, player, tc::get_initial_house_balance(), tc::get_initial_player_balance());
@@ -406,7 +405,7 @@ module satoshi_flip::test_mev_attack_resistant_single_player_satoshi {
         // House ends the game after it has already been ended.
         tc::mev_end_game(scenario, game_id, house, true);
 
-        test_scenario::end(scenario_val);
+        scenario_val.end();
     }
 
     #[test]
@@ -416,7 +415,7 @@ module satoshi_flip::test_mev_attack_resistant_single_player_satoshi {
         let player = @0xDECAF;
         let game_id = object::id_from_address(@0x404);
 
-        let scenario_val = test_scenario::begin(house);
+        let mut scenario_val = test_scenario::begin(house);
         let scenario = &mut scenario_val;
         {
             tc::fund_addresses(scenario, house, player, tc::get_initial_house_balance(), tc::get_initial_player_balance());
@@ -429,7 +428,7 @@ module satoshi_flip::test_mev_attack_resistant_single_player_satoshi {
         // Player tries to submit a guess for a game that does not exist.
         tc::mev_submit_guess(scenario, game_id, player, false, true);
 
-        test_scenario::end(scenario_val);
+        scenario_val.end();
     }
 
     #[test]
@@ -439,7 +438,7 @@ module satoshi_flip::test_mev_attack_resistant_single_player_satoshi {
         let player = @0xDECAF;
         let game_id = object::id_from_address(@0x1234);
 
-        let scenario_val = test_scenario::begin(house);
+        let mut scenario_val = test_scenario::begin(house);
         let scenario = &mut scenario_val;
         {
             // Funding the player with an amount higher than the maximum stake.
@@ -449,14 +448,14 @@ module satoshi_flip::test_mev_attack_resistant_single_player_satoshi {
         tc::init_house(scenario, house, true);
 
         // Player tries to borrow a game that does not exist.
-        test_scenario::next_tx(scenario, player);
+        scenario.next_tx(player);
         {
-            let house_data = test_scenario::take_shared<HouseData>(scenario);
+            let house_data = scenario.take_shared<HouseData>();
             sps::borrow_game(&house_data, game_id);
             test_scenario::return_shared(house_data);
         };
 
-        test_scenario::end(scenario_val);
+        scenario_val.end();
     }
 
     #[test]
@@ -465,7 +464,7 @@ module satoshi_flip::test_mev_attack_resistant_single_player_satoshi {
         let house = @0xCAFE;
         let player = @0xDECAF;
 
-        let scenario_val = test_scenario::begin(house);
+        let mut scenario_val = test_scenario::begin(house);
         let scenario = &mut scenario_val;
         {
             tc::fund_addresses(scenario, house, player, tc::get_initial_house_balance(), tc::get_initial_player_balance());
@@ -478,7 +477,7 @@ module satoshi_flip::test_mev_attack_resistant_single_player_satoshi {
         // House tries to end game before player sumbits choice.
         tc::mev_end_game(scenario, game_id, house, true);
 
-        test_scenario::end(scenario_val);
+        scenario_val.end();
     }
 
     #[test]
@@ -487,7 +486,7 @@ module satoshi_flip::test_mev_attack_resistant_single_player_satoshi {
         let house = @0xCAFE;
         let player = @0xDECAF;
 
-        let scenario_val = test_scenario::begin(house);
+        let mut scenario_val = test_scenario::begin(house);
         let scenario = &mut scenario_val;
         {
             tc::fund_addresses(scenario, house, player, tc::get_initial_house_balance(), tc::get_initial_player_balance());
@@ -498,15 +497,15 @@ module satoshi_flip::test_mev_attack_resistant_single_player_satoshi {
         let game_id = tc::mev_create_game_counter_and_submit_stake(scenario, player, tc::get_min_stake());
 
         // Player tries to dispute game without submitting a guess first.
-        test_scenario::next_tx(scenario, player);
+        scenario.next_tx(player);
         {
-            let house_data = test_scenario::take_shared<HouseData>(scenario);
-            let ctx = test_scenario::ctx(scenario);
+            let mut house_data = scenario.take_shared<HouseData>();
+            let ctx = scenario.ctx();
             sps::dispute_and_win(&mut house_data, game_id, ctx);
             test_scenario::return_shared(house_data);
         };
 
-        test_scenario::end(scenario_val);
+        scenario_val.end();
     }
 
     #[test]
@@ -515,7 +514,7 @@ module satoshi_flip::test_mev_attack_resistant_single_player_satoshi {
         let house = @0xCAFE;
         let player = @0xDECAF;
 
-        let scenario_val = test_scenario::begin(house);
+        let mut scenario_val = test_scenario::begin(house);
         let scenario = &mut scenario_val;
         {
             tc::fund_addresses(scenario, house, player, tc::get_initial_house_balance(), tc::get_initial_player_balance());
@@ -530,7 +529,7 @@ module satoshi_flip::test_mev_attack_resistant_single_player_satoshi {
         // Player tries to submit a different guess for the same game.
         tc::mev_submit_guess(scenario, game_id, player, true, true);
 
-        test_scenario::end(scenario_val);
+        scenario_val.end();
     }
 
     #[test]
@@ -540,7 +539,7 @@ module satoshi_flip::test_mev_attack_resistant_single_player_satoshi {
         let player = @0xDECAF;
         let another_player = @0xDAED;
 
-        let scenario_val = test_scenario::begin(house);
+        let mut scenario_val = test_scenario::begin(house);
         let scenario = &mut scenario_val;
         {
             tc::fund_addresses(scenario, house, player, tc::get_initial_house_balance(), tc::get_initial_player_balance());
@@ -558,7 +557,7 @@ module satoshi_flip::test_mev_attack_resistant_single_player_satoshi {
         // Another player tries to submit a guess in a game that's not theirs.
         tc::mev_submit_guess_of_another_players_game(scenario, game_id_player, another_player, false, true);
 
-        test_scenario::end(scenario_val);
+        scenario_val.end();
     }
 
 }

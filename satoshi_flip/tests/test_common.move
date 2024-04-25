@@ -1,12 +1,9 @@
 #[test_only]
 module satoshi_flip::test_common {
-    use std::string::{Self};
 
     use sui::coin::{Self, Coin};
     use sui::sui::SUI;
-    use sui::transfer;
     use sui::test_scenario::{Self, Scenario};
-    use sui::object::ID;
 
     use satoshi_flip::single_player_satoshi::{Self as sps};
     use satoshi_flip::mev_attack_resistant_single_player_satoshi::{Self as mev_sps};
@@ -75,7 +72,7 @@ module satoshi_flip::test_common {
 
     /// Used to initialize the user and house balances.
     public fun fund_addresses(scenario: &mut Scenario, house: address, player: address, house_funds: u64, player_funds: u64) {
-        let ctx = test_scenario::ctx(scenario);
+        let ctx = scenario.ctx();
         // Send coins to players.
         let coinA = coin::mint_for_testing<SUI>(house_funds, ctx);
         let coinB = coin::mint_for_testing<SUI>(player_funds, ctx);
@@ -86,55 +83,55 @@ module satoshi_flip::test_common {
     /// Deployment & house object initialization.
     /// Variable valid_coin is used to test expected failures.
     public fun init_house(scenario: &mut Scenario, house: address, valid_coin: bool) {
-        test_scenario::next_tx(scenario, house);
+        scenario.next_tx(house);
         {
-            let ctx = test_scenario::ctx(scenario);
+            let ctx = scenario.ctx();
             hd::init_for_testing(ctx);
         };
 
         // House initializes the contract with PK.
-        test_scenario::next_tx(scenario, house);
+        scenario.next_tx(house);
         {
-            let house_cap = test_scenario::take_from_sender<HouseCap>(scenario);
+            let house_cap = scenario.take_from_sender<HouseCap>();
             if (valid_coin) {
-                let house_coin = test_scenario::take_from_sender<Coin<SUI>>(scenario);
-                let ctx = test_scenario::ctx(scenario);
-                hd::initialize_house_data(house_cap, house_coin, PK, ctx);
+                let house_coin = scenario.take_from_sender<Coin<SUI>>();
+                let ctx = scenario.ctx();
+                house_cap.initialize_house_data(house_coin, PK, ctx);
             } else {
-                let ctx = test_scenario::ctx(scenario);
+                let ctx = scenario.ctx();
                 let zero_coin = coin::zero<SUI>(ctx);
-                hd::initialize_house_data(house_cap, zero_coin, PK, ctx);
+                house_cap.initialize_house_data(zero_coin, PK, ctx);
             };
         };
     }
 
     /// Create a Counter NFT for the player.
     fun create_counter_nft(scenario: &mut Scenario, player: address) {
-        test_scenario::next_tx(scenario, player);
+        scenario.next_tx(player);
         {
-            let ctx = test_scenario::ctx(scenario);
+            let ctx = scenario.ctx();
             let counter = counter_nft::mint(ctx);
-            counter_nft::transfer_to_sender(counter, ctx);
+            counter.transfer_to_sender(ctx);
         };
     }
 
     /// Helper function to get the game's fees.
     public fun game_fees(scenario: &mut Scenario, game_id: ID, house: address): u16 {
-        test_scenario::next_tx(scenario, house);
-        let house_data = test_scenario::take_shared<HouseData>(scenario);
+        scenario.next_tx(house);
+        let house_data = scenario.take_shared<HouseData>();
         let game = sps::borrow_game(game_id, &house_data);
-        let game_fee = sps::fee_in_bp(game);
+        let game_fee = game.fee_in_bp();
         test_scenario::return_shared(house_data);
         game_fee
     }
-        
+
     /// Advance the scenario by n epochs.
     public fun advance_epochs(scenario: &mut Scenario, sender: address, epochs: u64) {
-        test_scenario::next_tx(scenario, sender);
+        scenario.next_tx(sender);
         {
-            let i = 0 ;
+            let mut i = 0 ;
             while(i < epochs) {
-                test_scenario::next_epoch(scenario, sender);
+                scenario.next_epoch(sender);
                 i = i + 1;
             }
         };
@@ -148,32 +145,32 @@ module satoshi_flip::test_common {
         // Player creates Counter NFT
         create_counter_nft(scenario, player);
 
-        test_scenario::next_tx(scenario, player);
-        let player_coin = test_scenario::take_from_sender<Coin<SUI>>(scenario);
-        let player_counter = test_scenario::take_from_sender<Counter>(scenario);
-        let house_data = test_scenario::take_shared<HouseData>(scenario);
-        let ctx = test_scenario::ctx(scenario);
-        let stake_coin = coin::split(&mut player_coin, stake, ctx);
-        let guess = if(house_wins) {string::utf8(HEADS)} else {string::utf8(TAILS)};
-        let guess_value = if(valid_guess) {guess} else {string::utf8(INVALID)};
+        scenario.next_tx(player);
+        let mut player_coin = scenario.take_from_sender<Coin<SUI>>();
+        let mut player_counter = scenario.take_from_sender<Counter>();
+        let mut house_data = scenario.take_shared<HouseData>();
+        let ctx = scenario.ctx();
+        let stake_coin = player_coin.split(stake, ctx);
+        let guess = if(house_wins) {HEADS.to_string()} else {TAILS.to_string()};
+        let guess_value = if(valid_guess) {guess} else {INVALID.to_string()};
         let game_id = sps::start_game(guess_value, &mut player_counter, stake_coin, &mut house_data, ctx);
         test_scenario::return_shared(house_data);
-        test_scenario::return_to_sender(scenario, player_counter);
-        test_scenario::return_to_sender(scenario, player_coin);
+        scenario.return_to_sender(player_counter);
+        scenario.return_to_sender(player_coin);
         game_id
     }
 
     /// House ends the game.
     /// Variable valid_sig is used to test expected failures.
     public fun end_game(scenario: &mut Scenario, game_id: ID, house: address, valid_sig: bool) {
-        test_scenario::next_tx(scenario, house);
+        scenario.next_tx(house);
         {
-            let house_data = test_scenario::take_shared<HouseData>(scenario);
-            let ctx = test_scenario::ctx(scenario);
-            
+            let mut house_data = scenario.take_shared<HouseData>();
+            let ctx = scenario.ctx();
+
             let sig = if (valid_sig) {BLS_SIG} else {INVALID_BLS_SIG};
             sps::finish_game(game_id, sig, &mut house_data, ctx);
-            
+
             test_scenario::return_shared(house_data);
         };
     }
@@ -183,10 +180,10 @@ module satoshi_flip::test_common {
 
     /// Helper function to get the game's fees.
     public fun game_fees_mev(scenario: &mut Scenario, game_id: ID, house: address): u16 {
-        test_scenario::next_tx(scenario, house);
-        let house_data = test_scenario::take_shared<HouseData>(scenario);
+        scenario.next_tx(house);
+        let house_data = scenario.take_shared<HouseData>();
         let game = mev_sps::borrow_game(&house_data, game_id);
-        let game_fee = mev_sps::fee_in_bp(game);
+        let game_fee = game.fee_in_bp();
         test_scenario::return_shared(house_data);
         game_fee
     }
@@ -197,46 +194,46 @@ module satoshi_flip::test_common {
         // Player creates Counter NFT.
         create_counter_nft(scenario, player);
 
-        test_scenario::next_tx(scenario, player);
-        let player_coin = test_scenario::take_from_sender<Coin<SUI>>(scenario);
-        let house_data = test_scenario::take_shared<HouseData>(scenario);
-        let ctx = test_scenario::ctx(scenario);
-        let stake_coin = coin::split(&mut player_coin, stake, ctx);
+        scenario.next_tx(player);
+        let mut player_coin = scenario.take_from_sender<Coin<SUI>>();
+        let mut house_data = scenario.take_shared<HouseData>();
+        let ctx = scenario.ctx();
+        let stake_coin = player_coin.split(stake, ctx);
         let game_id = mev_sps::create_game_and_submit_stake(&mut house_data, stake_coin, ctx);
         test_scenario::return_shared(house_data);
-        test_scenario::return_to_sender(scenario, player_coin);
+        scenario.return_to_sender(player_coin);
 
         game_id
     }
 
     /// Players sumbits guess.
     public fun mev_submit_guess(scenario: &mut Scenario, game_id: ID, player: address, house_wins: bool, valid_guess: bool) {
-        
-        test_scenario::next_tx(scenario, player);
+
+        scenario.next_tx(player);
         {
-            let house_data = test_scenario::take_shared<HouseData>(scenario);
-            let player_counter = test_scenario::take_from_sender<Counter>(scenario);
-            let ctx = test_scenario::ctx(scenario);
-            let guess = if(house_wins) {string::utf8(HEADS)} else {string::utf8(TAILS)};
-            let guess_value = if(valid_guess) {guess} else {string::utf8(INVALID)};
+            let mut house_data = scenario.take_shared<HouseData>();
+            let mut player_counter = scenario.take_from_sender<Counter>();
+            let ctx = scenario.ctx();
+            let guess = if(house_wins) {HEADS.to_string()} else {TAILS.to_string()};
+            let guess_value = if(valid_guess) {guess} else {INVALID.to_string()};
             mev_sps::submit_guess(&mut house_data, &mut player_counter, game_id, guess_value, ctx);
-            test_scenario::return_to_sender(scenario, player_counter);
+            scenario.return_to_sender(player_counter);
             test_scenario::return_shared(house_data);
         };
     }
 
     /// Players tries to sumbit guess on someone else's game.
     public fun mev_submit_guess_of_another_players_game(scenario: &mut Scenario, game_id: ID, playerB: address, house_wins: bool, valid_guess: bool) {
-        
-        test_scenario::next_tx(scenario, playerB);
+
+        scenario.next_tx(playerB);
         {
-            let player_counter = test_scenario::take_from_sender<Counter>(scenario);
-            let guess = if(house_wins) {string::utf8(HEADS)} else {string::utf8(TAILS)};
-            let guess_value = if(valid_guess) {guess} else {string::utf8(INVALID)};
-            let house_data = test_scenario::take_shared<HouseData>(scenario);
-            let ctx = test_scenario::ctx(scenario);
+            let mut player_counter = scenario.take_from_sender<Counter>();
+            let guess = if(house_wins) {HEADS.to_string()} else {TAILS.to_string()};
+            let guess_value = if(valid_guess) {guess} else {INVALID.to_string()};
+            let mut house_data = scenario.take_shared<HouseData>();
+            let ctx = scenario.ctx();
             mev_sps::submit_guess(&mut house_data, &mut player_counter, game_id, guess_value, ctx);
-            test_scenario::return_to_sender(scenario, player_counter);
+            scenario.return_to_sender(player_counter);
             test_scenario::return_shared(house_data);
         };
 
@@ -244,14 +241,14 @@ module satoshi_flip::test_common {
 
     /// House ends the game.
     public fun mev_end_game(scenario: &mut Scenario, game_id: ID, house: address, valid_sig: bool) {
-        test_scenario::next_tx(scenario, house);
+        scenario.next_tx(house);
         {
-            let house_data = test_scenario::take_shared<HouseData>(scenario);
-            let ctx = test_scenario::ctx(scenario);
-            
+            let mut house_data = scenario.take_shared<HouseData>();
+            let ctx = scenario.ctx();
+
             let sig = if (valid_sig) {BLS_SIG} else {INVALID_BLS_SIG};
             mev_sps::finish_game(&mut house_data, game_id, sig, ctx);
-            
+
             test_scenario::return_shared(house_data);
         };
     }

@@ -248,7 +248,7 @@ module satoshi_flip::single_player_satoshi {
         let vrf_input = counter.get_vrf_input_and_increment();
 
         let id = object::new(ctx);
-        let game_id = object::uid_to_inner(&id);
+        let game_id = id.to_inner();
 
         let new_game = Game {
             id,

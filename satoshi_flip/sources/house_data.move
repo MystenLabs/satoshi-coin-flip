@@ -87,27 +87,27 @@ module satoshi_flip::house_data {
     /// not being able to participate in any more games.
     public fun withdraw(house_data: &mut HouseData, ctx: &mut TxContext) {
         // Only the house address can withdraw funds.
-        assert!(ctx.sender() == house(house_data), ECallerNotHouse);
+        assert!(ctx.sender() == house_data.house(), ECallerNotHouse);
 
         let total_balance = balance(house_data);
         let coin = coin::take(&mut house_data.balance, total_balance, ctx);
-        transfer::public_transfer(coin, house(house_data));
+        transfer::public_transfer(coin, house_data.house());
     }
 
     /// House can withdraw the accumulated fees of the house object.
     public fun claim_fees(house_data: &mut HouseData, ctx: &mut TxContext) {
         // Only the house address can withdraw fee funds.
-        assert!(ctx.sender() == house(house_data), ECallerNotHouse);
+        assert!(ctx.sender() == house_data.house(), ECallerNotHouse);
 
         let total_fees = fees(house_data);
         let coin = coin::take(&mut house_data.fees, total_fees, ctx);
-        transfer::public_transfer(coin, house(house_data));
+        transfer::public_transfer(coin, house_data.house());
     }
 
     /// House can update the max stake. This allows larger stake to be placed.
     public fun update_max_stake(house_data: &mut HouseData, max_stake: u64, ctx: &mut TxContext) {
         // Only the house address can update the base fee.
-        assert!(ctx.sender() == house(house_data), ECallerNotHouse);
+        assert!(ctx.sender() == house_data.house(), ECallerNotHouse);
 
         house_data.max_stake = max_stake;
     }
@@ -115,7 +115,7 @@ module satoshi_flip::house_data {
     /// House can update the min stake. This allows smaller stake to be placed.
     public fun update_min_stake(house_data: &mut HouseData, min_stake: u64, ctx: &mut TxContext) {
         // Only the house address can update the min stake.
-        assert!(ctx.sender() == house(house_data), ECallerNotHouse);
+        assert!(ctx.sender() == house_data.house(), ECallerNotHouse);
 
         house_data.min_stake = min_stake;
     }

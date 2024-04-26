@@ -6,23 +6,17 @@
 /// All games reside below the house as DoFs.
 module satoshi_flip::house_data {
 
-    use sui::object::{Self, UID};
     use sui::balance::{Self, Balance};
     use sui::sui::SUI;
     use sui::coin::{Self, Coin};
     use sui::package::{Self};
-    use sui::tx_context::{Self, TxContext};
-    use sui::transfer::{Self};
 
     // Error codes
     const ECallerNotHouse: u64 = 0;
     const EInsufficientBalance: u64 = 1;
 
-    friend satoshi_flip::single_player_satoshi;
-    friend satoshi_flip::mev_attack_resistant_single_player_satoshi;
-
     /// Configuration and Treasury object, managed by the house.
-    struct HouseData has key {
+    public struct HouseData has key {
         id: UID,
         balance: Balance<SUI>, // House's balance which also contains the acrued winnings of the house.
         house: address,
@@ -35,12 +29,12 @@ module satoshi_flip::house_data {
 
     /// A one-time use capability to initialize the house data; created and sent
     /// to sender in the initializer.
-    struct HouseCap has key {
+    public struct HouseCap has key {
         id: UID
     }
 
     /// Used as a one time witness to generate the publisher.
-    struct HOUSE_DATA has drop {}
+    public struct HOUSE_DATA has drop {}
 
     fun init(otw: HOUSE_DATA, ctx: &mut TxContext) {
         // Creating and sending the Publisher object to the sender.
@@ -51,7 +45,7 @@ module satoshi_flip::house_data {
             id: object::new(ctx)
         };
 
-        transfer::transfer(house_cap, tx_context::sender(ctx));
+        transfer::transfer(house_cap, ctx.sender());
     }
 
     // Functions
@@ -62,12 +56,12 @@ module satoshi_flip::house_data {
     /// Stores the house address and the base fee in basis points.
     /// This object is involed in all games created by the same instance of this package.
     public fun initialize_house_data(house_cap: HouseCap, coin: Coin<SUI>, public_key: vector<u8>, ctx: &mut TxContext) {
-        assert!(coin::value(&coin) > 0, EInsufficientBalance);
+        assert!(coin.value() > 0, EInsufficientBalance);
 
         let house_data = HouseData {
             id: object::new(ctx),
-            balance: coin::into_balance(coin),
-            house: tx_context::sender(ctx),
+            balance: coin.into_balance(),
+            house: ctx.sender(),
             public_key,
             max_stake: 50_000_000_000, // 50 SUI, 1 SUI = 10^9.
             min_stake: 1_000_000_000, // 1 SUI.
@@ -88,32 +82,32 @@ module satoshi_flip::house_data {
     }
 
     /// House can withdraw the entire balance of the house object.
-    /// Caution should be taken when calling this function. 
+    /// Caution should be taken when calling this function.
     /// If all funds are withdrawn, it will result in the house
     /// not being able to participate in any more games.
     public fun withdraw(house_data: &mut HouseData, ctx: &mut TxContext) {
         // Only the house address can withdraw funds.
-        assert!(tx_context::sender(ctx) == house(house_data), ECallerNotHouse);
+        assert!(ctx.sender() == house_data.house(), ECallerNotHouse);
 
         let total_balance = balance(house_data);
         let coin = coin::take(&mut house_data.balance, total_balance, ctx);
-        transfer::public_transfer(coin, house(house_data));
+        transfer::public_transfer(coin, house_data.house());
     }
 
     /// House can withdraw the accumulated fees of the house object.
     public fun claim_fees(house_data: &mut HouseData, ctx: &mut TxContext) {
         // Only the house address can withdraw fee funds.
-        assert!(tx_context::sender(ctx) == house(house_data), ECallerNotHouse);
+        assert!(ctx.sender() == house_data.house(), ECallerNotHouse);
 
         let total_fees = fees(house_data);
         let coin = coin::take(&mut house_data.fees, total_fees, ctx);
-        transfer::public_transfer(coin, house(house_data));
+        transfer::public_transfer(coin, house_data.house());
     }
 
     /// House can update the max stake. This allows larger stake to be placed.
     public fun update_max_stake(house_data: &mut HouseData, max_stake: u64, ctx: &mut TxContext) {
         // Only the house address can update the base fee.
-        assert!(tx_context::sender(ctx) == house(house_data), ECallerNotHouse);
+        assert!(ctx.sender() == house_data.house(), ECallerNotHouse);
 
         house_data.max_stake = max_stake;
     }
@@ -121,7 +115,7 @@ module satoshi_flip::house_data {
     /// House can update the min stake. This allows smaller stake to be placed.
     public fun update_min_stake(house_data: &mut HouseData, min_stake: u64, ctx: &mut TxContext) {
         // Only the house address can update the min stake.
-        assert!(tx_context::sender(ctx) == house(house_data), ECallerNotHouse);
+        assert!(ctx.sender() == house_data.house(), ECallerNotHouse);
 
         house_data.min_stake = min_stake;
     }
@@ -129,30 +123,30 @@ module satoshi_flip::house_data {
     // --------------- HouseData Mutations ---------------
 
     /// Returns a mutable reference to the balance of the house.
-    public(friend) fun borrow_balance_mut(house_data: &mut HouseData): &mut Balance<SUI> {
+    public(package) fun borrow_balance_mut(house_data: &mut HouseData): &mut Balance<SUI> {
         &mut house_data.balance
     }
 
     /// Returns a mutable reference to the fees of the house.
-    public(friend) fun borrow_fees_mut(house_data: &mut HouseData): &mut Balance<SUI> {
+    public(package) fun borrow_fees_mut(house_data: &mut HouseData): &mut Balance<SUI> {
         &mut house_data.fees
     }
 
     /// Returns a mutable reference to the house id.
-    public(friend) fun borrow_mut(house_data: &mut HouseData): &mut UID {
+    public(package) fun borrow_mut(house_data: &mut HouseData): &mut UID {
         &mut house_data.id
     }
 
     // --------------- HouseData Accessors ---------------
 
     /// Returns a reference to the house id.
-    public(friend) fun borrow(house_data: &HouseData): &UID {
+    public(package) fun borrow(house_data: &HouseData): &UID {
         &house_data.id
     }
 
     /// Returns the balance of the house.
     public fun balance(house_data: &HouseData): u64 {
-        balance::value(&house_data.balance)
+        house_data.balance.value()
     }
 
     /// Returns the address of the house.
@@ -177,7 +171,7 @@ module satoshi_flip::house_data {
 
     /// Returns the fees of the house.
     public fun fees(house_data: &HouseData): u64 {
-        balance::value(&house_data.fees)
+        house_data.fees.value()
     }
 
     /// Returns the base fee.

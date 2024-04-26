@@ -6,25 +6,21 @@
 /// and the cancellation of games.
 module satoshi_flip::single_player_satoshi {
     // Imports
-    use std::string::{Self, String};
-    use std::vector;
+    use std::string::String;
 
     use sui::coin::{Self, Coin};
-    use sui::balance::{Self, Balance};
+    use sui::balance::Balance;
     use sui::sui::SUI;
     use sui::bls12381::bls12381_min_pk_verify;
-    use sui::object::{Self, UID, ID};
-    use sui::tx_context::{Self, TxContext};
-    use sui::transfer;
     use sui::event::emit;
     use sui::hash::{blake2b256};
     use sui::dynamic_object_field::{Self as dof};
 
     // Counter library
-    use satoshi_flip::counter_nft::{Self, Counter};
+    use satoshi_flip::counter_nft::Counter;
 
     // HouseData library
-    use satoshi_flip::house_data::{Self as hd, HouseData};
+    use satoshi_flip::house_data::HouseData;
 
     // Consts
     const EPOCHS_CANCEL_AFTER: u64 = 7;
@@ -47,7 +43,7 @@ module satoshi_flip::single_player_satoshi {
     // Events
 
     /// Emitted when a new game has started.
-    struct NewGame has copy, drop {
+    public struct NewGame has copy, drop {
         game_id: ID,
         player: address,
         vrf_input: vector<u8>,
@@ -57,7 +53,7 @@ module satoshi_flip::single_player_satoshi {
     }
 
     /// Emitted when a game has finished.
-    struct Outcome has copy, drop {
+    public struct Outcome has copy, drop {
         game_id: ID,
         status: u8
     }
@@ -66,7 +62,7 @@ module satoshi_flip::single_player_satoshi {
     // Represents a game and holds the acrued stake.
     // The guess field could have also been represented as a u8 or boolean, but we chose to use "H" and "T" strings for readability and safety.
     // Makes it easier for the user to assess if a selection they made on a DApp matches with the txn they are signing on their wallet.
-    struct Game has key, store {
+    public struct Game has key, store {
         id: UID,
         guess_placed_epoch: u64,
         total_stake: Balance<SUI>,
@@ -79,10 +75,10 @@ module satoshi_flip::single_player_satoshi {
     /// Function used to create a new game. The player must provide a guess and a Counter NFT.
     /// Stake is taken from the player's coin and added to the game's stake. The house's stake is also added to the game's stake.
     public fun start_game(guess: String, counter: &mut Counter, coin: Coin<SUI>, house_data: &mut HouseData, ctx: &mut TxContext): ID {
-        let fee_bp = hd::base_fee_in_bp(house_data);
+        let fee_bp = house_data.base_fee_in_bp();
         let (id, new_game) = internal_start_game(guess, counter, coin, house_data, fee_bp, ctx);
 
-        dof::add(hd::borrow_mut(house_data), id, new_game);
+        dof::add(house_data.borrow_mut(), id, new_game);
         id
     }
 
@@ -102,40 +98,40 @@ module satoshi_flip::single_player_satoshi {
         let Game {
             id,
             guess_placed_epoch: _,
-            total_stake,
+            mut total_stake,
             guess,
             player,
             vrf_input,
             fee_bp
-        } = dof::remove<ID, Game>(hd::borrow_mut(house_data), game_id);
+        } = dof::remove<ID, Game>(house_data.borrow_mut(), game_id);
 
         object::delete(id);
 
         // Step 1: Check the BLS signature, if its invalid abort.
-        let is_sig_valid = bls12381_min_pk_verify(&bls_sig, &hd::public_key(house_data), &vrf_input);
+        let is_sig_valid = bls12381_min_pk_verify(&bls_sig, &house_data.public_key(), &vrf_input);
         assert!(is_sig_valid, EInvalidBlsSig);
 
         // Hash the beacon before taking the 1st byte.
         let hashed_beacon = blake2b256(&bls_sig);
         // Step 2: Determine winner.
-        let first_byte = *vector::borrow(&hashed_beacon, 0);
+        let first_byte = hashed_beacon[0];
         let player_won = map_guess(guess) == (first_byte % 2);
 
         // Step 3: Distribute funds based on result.
         let status = if (player_won) {
             // Step 3.a: If player wins transfer the game balance as a coin to the player.
             // Calculate the fee and transfer it to the house.
-            let stake_amount = balance::value(&total_stake);
+            let stake_amount = total_stake.value();
             let fee_amount = fee_amount(stake_amount, fee_bp);
-            let fees = balance::split(&mut total_stake, fee_amount);
-            balance::join(hd::borrow_fees_mut(house_data), fees);
+            let fees = total_stake.split(fee_amount);
+            house_data.borrow_fees_mut().join(fees);
 
             // Calculate the rewards and take it from the game stake.
-            transfer::public_transfer(coin::from_balance(total_stake, ctx), player);
+            transfer::public_transfer(total_stake.into_coin(ctx), player);
             PLAYER_WON_STATE
         } else {
             // Step 3.b: If house wins, then add the game stake to the house_data.house_balance (no fees are taken).
-            balance::join(hd::borrow_balance_mut(house_data), total_stake);
+            house_data.borrow_balance_mut().join(total_stake);
             HOUSE_WON_STATE
         };
 
@@ -159,16 +155,16 @@ module satoshi_flip::single_player_satoshi {
             player,
             vrf_input: _,
             fee_bp: _
-        } = dof::remove(hd::borrow_mut(house_data), game_id);
+        } = dof::remove(house_data.borrow_mut(), game_id);
 
         object::delete(id);
 
-        let caller_epoch = tx_context::epoch(ctx);
+        let caller_epoch = ctx.epoch();
         let cancel_epoch = guess_placed_epoch + EPOCHS_CANCEL_AFTER;
         // Ensure that minimum epochs have passed before user can cancel.
         assert!(cancel_epoch <= caller_epoch, ECanNotChallengeYet);
 
-        transfer::public_transfer(coin::from_balance(total_stake, ctx), player);
+        transfer::public_transfer(total_stake.into_coin(ctx), player);
 
         emit(Outcome {
             game_id,
@@ -185,7 +181,7 @@ module satoshi_flip::single_player_satoshi {
 
     /// Returns the total stake.
     public fun stake(game: &Game): u64 {
-        balance::value(&game.total_stake)
+        game.total_stake.value()
     }
 
     /// Returns the player's guess.
@@ -218,55 +214,55 @@ module satoshi_flip::single_player_satoshi {
 
     /// Helper function to check if a game exists.
     public fun game_exists(house_data: &HouseData, game_id: ID): bool {
-        dof::exists_(hd::borrow(house_data), game_id)
+        dof::exists_(house_data.borrow(), game_id)
     }
 
     /// Helper function to check that a game exists and return a reference to the game Object.
     /// Can be used in combination with any accessor to retrieve the desired game field.
     public fun borrow_game(game_id: ID, house_data: &HouseData): &Game {
         assert!(game_exists(house_data, game_id), EGameDoesNotExist);
-        dof::borrow(hd::borrow(house_data), game_id)
+        dof::borrow(house_data.borrow(), game_id)
     }
 
     // --------------- Internal Helper functions ---------------
 
-    /// Internal helper function used to create a new game. 
+    /// Internal helper function used to create a new game.
     /// The player must provide a guess and a Counter NFT.
-    /// Stake is taken from the player's coin and added to the game's stake. 
+    /// Stake is taken from the player's coin and added to the game's stake.
     /// The house's stake is also added to the game's stake.
     fun internal_start_game(guess: String, counter: &mut Counter, coin: Coin<SUI>, house_data: &mut HouseData, fee_bp: u16, ctx: &mut TxContext): (ID, Game) {
         // Ensure guess is valid.
         map_guess(guess);
-        let user_stake = coin::value(&coin);
+        let user_stake = coin.value();
         // Ensure that the stake is not higher than the max stake.
-        assert!(user_stake <= hd::max_stake(house_data), EStakeTooHigh);
+        assert!(user_stake <= house_data.max_stake(), EStakeTooHigh);
         // Ensure that the stake is not lower than the min stake.
-        assert!(user_stake >= hd::min_stake(house_data), EStakeTooLow);
+        assert!(user_stake >= house_data.min_stake(), EStakeTooLow);
         // Ensure that the house has enough balance to play for this game.
-        assert!(hd::balance(house_data) >= user_stake, EInsufficientHouseBalance);
+        assert!(house_data.balance() >= user_stake, EInsufficientHouseBalance);
 
         // Get the house's stake.
-        let total_stake = balance::split(hd::borrow_balance_mut(house_data), user_stake);
+        let mut total_stake = house_data.borrow_balance_mut().split(user_stake);
         coin::put(&mut total_stake, coin);
 
-        let vrf_input = counter_nft::get_vrf_input_and_increment(counter);
+        let vrf_input = counter.get_vrf_input_and_increment();
 
         let id = object::new(ctx);
-        let game_id = object::uid_to_inner(&id);
+        let game_id = id.to_inner();
 
         let new_game = Game {
             id,
-            guess_placed_epoch: tx_context::epoch(ctx),
+            guess_placed_epoch: ctx.epoch(),
             total_stake,
             guess,
-            player: tx_context::sender(ctx),
+            player: ctx.sender(),
             vrf_input,
             fee_bp
         };
 
         emit(NewGame {
             game_id,
-            player: tx_context::sender(ctx),
+            player: ctx.sender(),
             vrf_input,
             guess,
             user_stake,
@@ -280,9 +276,11 @@ module satoshi_flip::single_player_satoshi {
     /// H = 0
     /// T = 1
     fun map_guess(guess: String): u8 {
-        assert!(string::bytes(&guess) == &HEADS || string::bytes(&guess) == &TAILS, EInvalidGuess);
+    	let heads = HEADS;
+    	let tails = TAILS;
+        assert!(guess.bytes() == heads || guess.bytes() == tails, EInvalidGuess);
 
-        if (string::bytes(&guess) == &HEADS) {
+        if (guess.bytes() == heads) {
             0
         } else {
             1

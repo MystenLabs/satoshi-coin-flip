@@ -17,71 +17,68 @@ module satoshi_flip::test_counter_nft {
 
     #[test]
     fun creates_counter_nft() {
-        let scenario_val = test_scenario::begin(USER);
-        let scenario = &mut scenario_val;
+        let mut scenario = test_scenario::begin(USER);
 
         // Mint a counter NFT for USER.
         {
-            let ctx = test_scenario::ctx(scenario);
+            let ctx = scenario.ctx();
             let counter = counter_nft::mint(ctx);
-            counter_nft::transfer_to_sender(counter, ctx);
+            counter.transfer_to_sender(ctx);
         };
 
         // Check that the initial count value is 0.
-        test_scenario::next_tx(scenario, USER);
+        scenario.next_tx(USER);
         {
-            let counter_nft = test_scenario::take_from_sender<Counter>(scenario);
-            assert!(counter_nft::count(&counter_nft) == 0, EInvalidCountOnNewCounter);
-            test_scenario::return_to_sender(scenario, counter_nft);
+            let counter_nft = scenario.take_from_sender<Counter>();
+            assert!(counter_nft.count() == 0, EInvalidCountOnNewCounter);
+            scenario.return_to_sender(counter_nft);
         };
 
-        test_scenario::end(scenario_val);
+        scenario.end();
     }
 
     #[test]
     fun increments_counter_nft() {
-        let scenario_val = test_scenario::begin(USER);
-        let scenario = &mut scenario_val;
+        let mut scenario = test_scenario::begin(USER);
 
         // Mint a counter NFT for USER.
         {
-            let ctx = test_scenario::ctx(scenario);
+            let ctx = scenario.ctx();
             let counter = counter_nft::mint(ctx);
-            counter_nft::transfer_to_sender(counter, ctx);
+            counter.transfer_to_sender(ctx);
         };
 
         // Increment it & check its value has increased.
-        test_scenario::next_tx(scenario, USER);
+        scenario.next_tx(USER);
         {
-            let counter_nft = test_scenario::take_from_sender<Counter>(scenario);
-            counter_nft::get_vrf_input_and_increment(&mut counter_nft);
-            assert!(counter_nft::count(&counter_nft) == 1, EInvalidCountOnIncreasedCounter);
-            test_scenario::return_to_sender(scenario, counter_nft);
+            let mut counter_nft = scenario.take_from_sender<Counter>();
+            counter_nft.get_vrf_input_and_increment();
+            assert!(counter_nft.count() == 1, EInvalidCountOnIncreasedCounter);
+            scenario.return_to_sender(counter_nft);
         };
 
-        test_scenario::end(scenario_val);
+        scenario.end();
     }
 
     #[test]
     fun burns_counter_nft() {
-        let scenario_val = test_scenario::begin(USER);
-        let scenario = &mut scenario_val;
+        let mut scenario = test_scenario::begin(USER);
 
        // Mint a counter NFT for USER.
         {
-            let ctx = test_scenario::ctx(scenario);
+            let ctx = scenario.ctx();
             let counter = counter_nft::mint(ctx);
-            counter_nft::transfer_to_sender(counter, ctx);
+            counter.transfer_to_sender(ctx);
         };
 
         // Burn the NFT.
-        test_scenario::next_tx(scenario, USER);
+        scenario.next_tx(USER);
         {
-            let counter_nft = test_scenario::take_from_sender<Counter>(scenario);
-            counter_nft::burn_for_testing(counter_nft);
+            let counter_nft = scenario.take_from_sender<Counter>();
+            counter_nft.burn_for_testing();
         };
 
-        test_scenario::end(scenario_val);
+        scenario.end();
     }
 
 }

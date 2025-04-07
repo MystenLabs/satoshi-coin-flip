@@ -305,9 +305,9 @@ module satoshi_flip::mev_attack_resistant_single_player_satoshi {
     fun map_guess(guess: String): u8 {
     	let heads = HEADS;
     	let tails = TAILS;
-        assert!(guess.bytes() == heads|| guess.bytes() == tails, EInvalidGuess);
+        assert!(guess.as_bytes() == heads|| guess.as_bytes() == tails, EInvalidGuess);
 
-        if (guess.bytes() == heads) {
+        if (guess.as_bytes() == heads) {
             0
         } else {
             1

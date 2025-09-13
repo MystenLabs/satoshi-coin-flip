@@ -10,3 +10,4 @@ satoshi_flip/Move.lock
 # coverage files
 .coverage_map.mvcov
 .trace
+package_summaries

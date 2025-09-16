@@ -1,8 +1,10 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+.idea
 
 # production
 **/build
-.idea
+.env
+.env.production
 
 # debug
 **/sui.log.*
@@ -12,3 +14,4 @@ satoshi_flip/Move.lock
 .coverage_map.mvcov
 .trace
 package_summaries
+

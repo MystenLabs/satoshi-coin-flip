@@ -1,0 +1,23 @@
+{
+  "name": "scripts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "deploy_contract.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "setup": "npx tsc && env-cmd -f .env.local node dist/setup-dev.js",
+    "create:coin-stack": "npx tsc && env-cmd -f .env.local node dist/createCoinStack.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@mysten/sui.js": "~0.45.1",
+    "@types/node": "^20.8.10",
+    "dotenv": "^16.1.4",
+    "env-cmd": "^10.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.8.10",
+    "typescript": "^5.9.2"
+  }
+}

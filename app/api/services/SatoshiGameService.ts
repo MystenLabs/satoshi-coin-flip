@@ -57,19 +57,18 @@ class SatoshiGameService {
     }
   }
 
-  public async getVRFInputInHex(gameId: string): Promise<string> {
-    let game: any = await this.suiService.getObject(gameId);
+  // This method is no longer needed with on-chain randomness
+  // public async getVRFInputInHex(gameId: string): Promise<string> {
+  //   let game: any = await this.suiService.getObject(gameId);
+  //   let VRFInput = Uint8Array.from(game.data?.content.fields.vrf_input);
+  //   let VRFInputInHex = bytesToHex(VRFInput);
+  //   console.log("[getVRFInputInHex] - Output:", VRFInputInHex);
+  //   return VRFInputInHex;
+  // }
 
-    let VRFInput = Uint8Array.from(game.data?.content.fields.vrf_input);
-    let VRFInputInHex = bytesToHex(VRFInput);
-    console.log("[getVRFInputInHex] - Output:", VRFInputInHex);
-    return VRFInputInHex;
-  }
-
-  // end-game for single player satoshi
+  // end-game for single player satoshi using on-chain randomness
   public finish_game(
-    gameId: string,
-    blsSig: Uint8Array
+    gameId: string
   ): Promise<{ playerWon: boolean; transactionDigest: string }> {
     return new Promise(async (resolve, reject) => {
       // Limiting the use of endGame call to only gameIds created within the scope of the application
@@ -106,8 +105,8 @@ class SatoshiGameService {
         target: `${process.env.PACKAGE_ADDRESS}::single_player_satoshi::finish_game`,
         arguments: [
           tx.pure(gameId),
-          tx.pure(Array.from(blsSig)),
           tx.object(String(process.env.HOUSE_DATA)),
+          tx.object("0x8"), // Random object
         ],
       });
 

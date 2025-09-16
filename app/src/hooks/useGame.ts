@@ -66,7 +66,6 @@ export const useGame = (counterNFT: any) => {
             target: `${PACKAGE_ID}::single_player_satoshi::start_game`,
             arguments: [
                 tx.pure(choice === 'head' ? 'H' : 'T'),
-                tx.object(counterNFT),
                 coin,
                 tx.object(HOUSE_DATA),
             ],
@@ -94,7 +93,6 @@ export const useGame = (counterNFT: any) => {
                         guess: string;
                         player: string;
                         user_stake: string;
-                        vrf_input: number[];
                     };
                     const gameObjectId = createdGame.game_id;
                     const txnDigest = resp.digest;

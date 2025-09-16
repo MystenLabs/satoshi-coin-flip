@@ -1,0 +1,965 @@
+{
+	"info": {
+		"_postman_id": "3ca37087-9932-4b24-b8eb-5f01e49179ef",
+		"name": "Satoshi Flip endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "[DEPRECATED] Start Game",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "minAmount",
+							"value": "100",
+							"description": "minAmount is the minimum amount accepted for a bet",
+							"type": "default"
+						},
+						{
+							"key": "maxAmount",
+							"value": "5000",
+							"description": "maxAmount is the maximum amount accepted for a bet",
+							"type": "default"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:8080/game/start",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"game",
+						"start"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Start Game - (200) Success",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "minAmount",
+									"value": "100",
+									"description": "minAmount is the minimum amount accepted for a bet",
+									"type": "default"
+								},
+								{
+									"key": "maxAmount",
+									"value": "5000",
+									"description": "maxAmount is the maximum amount accepted for a bet",
+									"type": "default"
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:8080/game/start",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"game",
+								"start"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "122"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"7a-f59aUY7DS1dxfDLY00HUiWz/y+g\""
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 14 Dec 2022 19:54:57 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"gameId\": \"0xa03eb6b869d6ad797d4747b7af83e60597f99ae9\",\n    \"transactionDigest\": \"DYeFQyKEpEnbKd6U6vKLVkLqSnBNtEjRyHCYzRkvssq9\"\n}"
+				},
+				{
+					"name": "Start Game - (400) Missing a body parameter",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "minAmount",
+									"value": "100",
+									"description": "minAmount is the minimum amount accepted for a bet",
+									"type": "default"
+								},
+								{
+									"key": "maxAmount",
+									"value": "5000",
+									"description": "maxAmount is the maximum amount accepted for a bet",
+									"type": "default"
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:8080/game/start",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"game",
+								"start"
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "1576"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"628-MzERLQANBvf9RPARsD6ZO4UbVUY\""
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 14 Dec 2022 20:22:56 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Parameter \\\"minAmount\\\" is required\",\n    \"stack\": \"Error: Parameter \\\"minAmount\\\" is required\\n    at checkStart (/home/stefanos/Documents/satoshi-coin-flip/api/middleware/index.ts:32:13)\\n    at Layer.handle [as handle_request] (/home/stefanos/Documents/satoshi-coin-flip/api/node_modules/.pnpm/express@4.18.2/node_modules/express/lib/router/layer.js:95:5)\\n    at next (/home/stefanos/Documents/satoshi-coin-flip/api/node_modules/.pnpm/express@4.18.2/node_modules/express/lib/router/route.js:144:13)\\n    at Route.dispatch (/home/stefanos/Documents/satoshi-coin-flip/api/node_modules/.pnpm/express@4.18.2/node_modules/express/lib/router/route.js:114:3)\\n    at Layer.handle [as handle_request] (/home/stefanos/Documents/satoshi-coin-flip/api/node_modules/.pnpm/express@4.18.2/node_modules/express/lib/router/layer.js:95:5)\\n    at /home/stefanos/Documents/satoshi-coin-flip/api/node_modules/.pnpm/express@4.18.2/node_modules/express/lib/router/index.js:284:15\\n    at Function.process_params (/home/stefanos/Documents/satoshi-coin-flip/api/node_modules/.pnpm/express@4.18.2/node_modules/express/lib/router/index.js:346:12)\\n    at next (/home/stefanos/Documents/satoshi-coin-flip/api/node_modules/.pnpm/express@4.18.2/node_modules/express/lib/router/index.js:280:10)\\n    at Function.handle (/home/stefanos/Documents/satoshi-coin-flip/api/node_modules/.pnpm/express@4.18.2/node_modules/express/lib/router/index.js:175:3)\\n    at router (/home/stefanos/Documents/satoshi-coin-flip/api/node_modules/.pnpm/express@4.18.2/node_modules/express/lib/router/index.js:47:12)\"\n}"
+				}
+			]
+		},
+		{
+			"name": "[DEPRECATED] End Game  (replaced by Single Player End)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "gameId",
+							"value": "0x7119cb53a36c48e5e99c30719d717840a449f553",
+							"description": "A gameId that was created with the game/start endpoint",
+							"type": "default"
+						}
+					],
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/game/end",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"game",
+						"end"
+					],
+					"query": [
+						{
+							"key": "test",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "End Game - (200) Success",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "gameId",
+									"value": "0xa03eb6b869d6ad797d4747b7af83e60597f99ae9",
+									"description": "A gameId that was created with the /start endpoint",
+									"type": "default"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/game/end",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"game",
+								"end"
+							],
+							"query": [
+								{
+									"key": "test",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "86"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"56-lSKCLsD9uoDniiydzMYuYRdVMhU\""
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 14 Dec 2022 19:55:33 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"playerWon\": false,\n    \"transactionDigest\": \"8xLSdn9tYxu72phsSELsGAsoMdDZU1fNxcEiWvajQTyK\"\n}"
+				},
+				{
+					"name": "End Game - (500) Invalid gameId",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "gameId",
+									"value": "0xa03eb6b869d6ad797d4747b7af83e60597f99ae9",
+									"description": "A gameId that was created with the game/start endpoint",
+									"type": "default"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/game/end",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"game",
+								"end"
+							],
+							"query": [
+								{
+									"key": "test",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "55"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"37-VlDijP7eBOiIDW2dcs1bOa3Ezis\""
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 14 Dec 2022 20:29:05 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Given gameId does not exist\",\n    \"stack\": \"N/A\"\n}"
+				},
+				{
+					"name": "End Game - (500) Missing a body parameter",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "gameId",
+									"value": "0xa03eb6b869d6ad797d4747b7af83e60597f99ae9",
+									"description": "A gameId that was created with the game/start endpoint",
+									"type": "default",
+									"disabled": true
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/game/end",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"game",
+								"end"
+							],
+							"query": [
+								{
+									"key": "test",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "1568"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"620-4gbQaocewCsuMh39mu33ynk2Nnw\""
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 14 Dec 2022 20:30:50 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Parameter \\\"gameId\\\" is required\",\n    \"stack\": \"Error: Parameter \\\"gameId\\\" is required\\n    at checkEnd (/home/stefanos/Documents/satoshi-coin-flip/api/middleware/index.ts:46:35)\\n    at Layer.handle [as handle_request] (/home/stefanos/Documents/satoshi-coin-flip/api/node_modules/.pnpm/express@4.18.2/node_modules/express/lib/router/layer.js:95:5)\\n    at next (/home/stefanos/Documents/satoshi-coin-flip/api/node_modules/.pnpm/express@4.18.2/node_modules/express/lib/router/route.js:144:13)\\n    at Route.dispatch (/home/stefanos/Documents/satoshi-coin-flip/api/node_modules/.pnpm/express@4.18.2/node_modules/express/lib/router/route.js:114:3)\\n    at Layer.handle [as handle_request] (/home/stefanos/Documents/satoshi-coin-flip/api/node_modules/.pnpm/express@4.18.2/node_modules/express/lib/router/layer.js:95:5)\\n    at /home/stefanos/Documents/satoshi-coin-flip/api/node_modules/.pnpm/express@4.18.2/node_modules/express/lib/router/index.js:284:15\\n    at Function.process_params (/home/stefanos/Documents/satoshi-coin-flip/api/node_modules/.pnpm/express@4.18.2/node_modules/express/lib/router/index.js:346:12)\\n    at next (/home/stefanos/Documents/satoshi-coin-flip/api/node_modules/.pnpm/express@4.18.2/node_modules/express/lib/router/index.js:280:10)\\n    at Function.handle (/home/stefanos/Documents/satoshi-coin-flip/api/node_modules/.pnpm/express@4.18.2/node_modules/express/lib/router/index.js:175:3)\\n    at router (/home/stefanos/Documents/satoshi-coin-flip/api/node_modules/.pnpm/express@4.18.2/node_modules/express/lib/router/index.js:47:12)\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Single Player End",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "gameId",
+							"value": "",
+							"description": "this is just the gameId (without the user's random bytes)",
+							"type": "default"
+						},
+						{
+							"key": "blsSig",
+							"value": "",
+							"description": "signature produced by the /game/sign endpoint",
+							"type": "default"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:8080/game/single/end",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"game",
+						"single",
+						"end"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null,
+							"disabled": true
+						},
+						{
+							"key": "",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get created games",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://satoshi-flip-api.sui.io/game/objects",
+					"protocol": "https",
+					"host": [
+						"satoshi-flip-api",
+						"sui",
+						"io"
+					],
+					"path": [
+						"game",
+						"objects"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Get created games - (200) Success",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/game/objects",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"game",
+								"objects"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "103"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"67-6MgE//hs9IJQ0YM8xWOgc5aWaC0\""
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 14 Dec 2022 19:56:09 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"gameIds\": [\n        \"0xa03eb6b869d6ad797d4747b7af83e60597f99ae9\",\n        \"0x44b329e27fc1b935d3b4075b098cfff7274ce609\"\n    ]\n}"
+				}
+			]
+		},
+		{
+			"name": "Endpoint doesn't exist",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/wrong_path",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"wrong_path"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Endpoint doesn't exist - (404) Not found",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/wrong_path",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"wrong_path"
+							]
+						}
+					},
+					"status": "Not Found",
+					"code": 404,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "1555"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"613-fdftHfDdqVO6JbagUDmBGmMJ0wI\""
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 14 Dec 2022 20:22:47 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Not Found: /wrong_path\",\n    \"stack\": \"Error: Not Found: /wrong_path\\n    at notFound (/home/stefanos/Documents/satoshi-coin-flip/api/middleware/index.ts:12:17)\\n    at Layer.handle [as handle_request] (/home/stefanos/Documents/satoshi-coin-flip/api/node_modules/.pnpm/express@4.18.2/node_modules/express/lib/router/layer.js:95:5)\\n    at trim_prefix (/home/stefanos/Documents/satoshi-coin-flip/api/node_modules/.pnpm/express@4.18.2/node_modules/express/lib/router/index.js:328:13)\\n    at /home/stefanos/Documents/satoshi-coin-flip/api/node_modules/.pnpm/express@4.18.2/node_modules/express/lib/router/index.js:286:9\\n    at Function.process_params (/home/stefanos/Documents/satoshi-coin-flip/api/node_modules/.pnpm/express@4.18.2/node_modules/express/lib/router/index.js:346:12)\\n    at next (/home/stefanos/Documents/satoshi-coin-flip/api/node_modules/.pnpm/express@4.18.2/node_modules/express/lib/router/index.js:280:10)\\n    at urlencodedParser (/home/stefanos/Documents/satoshi-coin-flip/api/node_modules/.pnpm/body-parser@1.20.1/node_modules/body-parser/lib/types/urlencoded.js:91:7)\\n    at Layer.handle [as handle_request] (/home/stefanos/Documents/satoshi-coin-flip/api/node_modules/.pnpm/express@4.18.2/node_modules/express/lib/router/layer.js:95:5)\\n    at trim_prefix (/home/stefanos/Documents/satoshi-coin-flip/api/node_modules/.pnpm/express@4.18.2/node_modules/express/lib/router/index.js:328:13)\\n    at /home/stefanos/Documents/satoshi-coin-flip/api/node_modules/.pnpm/express@4.18.2/node_modules/express/lib/router/index.js:286:9\"\n}"
+				}
+			]
+		},
+		{
+			"name": "BLS sign",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "gameId",
+							"value": "bc3e7246be0237c6a259451fdf72c50914c31157d6e6cb30eFE9d1DFdC8D7F5cEBb17bdd",
+							"description": "gameId + user 16 random bytes",
+							"type": "default"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:8080/game/sign",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"game",
+						"sign"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "BLS sign",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "gameId",
+									"value": "bc3e7246be0237c6a259451fdf72c50914c31157d6e6cb30eFE9d1DFdC8D7F5cEBb17bdd",
+									"type": "default"
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:8080/game/sign",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"game",
+								"sign"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "368"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"170-V6lBsuavk4db+oWwhUGn1QBnJ2M\""
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 25 Jan 2023 09:12:15 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"blsSig\": [\n        182,\n        127,\n        147,\n        107,\n        92,\n        110,\n        243,\n        113,\n        174,\n        60,\n        58,\n        235,\n        112,\n        211,\n        70,\n        189,\n        145,\n        124,\n        188,\n        229,\n        66,\n        224,\n        176,\n        243,\n        179,\n        224,\n        89,\n        22,\n        233,\n        132,\n        124,\n        207,\n        225,\n        147,\n        8,\n        171,\n        213,\n        83,\n        90,\n        252,\n        124,\n        155,\n        99,\n        214,\n        230,\n        203,\n        195,\n        112,\n        11,\n        104,\n        122,\n        192,\n        180,\n        31,\n        150,\n        29,\n        56,\n        67,\n        49,\n        132,\n        155,\n        180,\n        163,\n        133,\n        16,\n        247,\n        199,\n        214,\n        135,\n        226,\n        174,\n        84,\n        194,\n        43,\n        117,\n        155,\n        111,\n        62,\n        187,\n        203,\n        114,\n        223,\n        230,\n        103,\n        42,\n        89,\n        68,\n        216,\n        14,\n        40,\n        156,\n        198,\n        78,\n        182,\n        179,\n        189\n    ]\n}"
+				}
+			]
+		},
+		{
+			"name": "BLS verify",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "msg",
+							"value": "bc3e7246be0237c6a259451fdf72c50914c31157d6e6cb30eFE9d1DFdC8D7F5cEBb17bdd",
+							"description": "gameId + user 16 random bytes",
+							"type": "default"
+						},
+						{
+							"key": "sig",
+							"value": "[\n        182,\n        127,\n        147,\n        107,\n        92,\n        110,\n        243,\n        113,\n        174,\n        60,\n        58,\n        235,\n        112,\n        211,\n        70,\n        189,\n        145,\n        124,\n        188,\n        229,\n        66,\n        224,\n        176,\n        243,\n        179,\n        224,\n        89,\n        22,\n        233,\n        132,\n        124,\n        207,\n        225,\n        147,\n        8,\n        171,\n        213,\n        83,\n        90,\n        252,\n        124,\n        155,\n        99,\n        214,\n        230,\n        203,\n        195,\n        112,\n        11,\n        104,\n        122,\n        192,\n        180,\n        31,\n        150,\n        29,\n        56,\n        67,\n        49,\n        132,\n        155,\n        180,\n        163,\n        133,\n        16,\n        247,\n        199,\n        214,\n        135,\n        226,\n        174,\n        84,\n        194,\n        43,\n        117,\n        155,\n        111,\n        62,\n        187,\n        203,\n        114,\n        223,\n        230,\n        103,\n        42,\n        89,\n        68,\n        216,\n        14,\n        40,\n        156,\n        198,\n        78,\n        182,\n        179,\n        189\n    ]",
+							"description": "signature produced by the /game/sign endpoint",
+							"type": "default"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:8080/game/verify",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"game",
+						"verify"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "BLS verify",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "msg",
+									"value": "bc3e7246be0237c6a259451fdf72c50914c31157d6e6cb30eFE9d1DFdC8D7F5cEBb17bdd",
+									"type": "default"
+								},
+								{
+									"key": "sig",
+									"value": "[\n        182,\n        127,\n        147,\n        107,\n        92,\n        110,\n        243,\n        113,\n        174,\n        60,\n        58,\n        235,\n        112,\n        211,\n        70,\n        189,\n        145,\n        124,\n        188,\n        229,\n        66,\n        224,\n        176,\n        243,\n        179,\n        224,\n        89,\n        22,\n        233,\n        132,\n        124,\n        207,\n        225,\n        147,\n        8,\n        171,\n        213,\n        83,\n        90,\n        252,\n        124,\n        155,\n        99,\n        214,\n        230,\n        203,\n        195,\n        112,\n        11,\n        104,\n        122,\n        192,\n        180,\n        31,\n        150,\n        29,\n        56,\n        67,\n        49,\n        132,\n        155,\n        180,\n        163,\n        133,\n        16,\n        247,\n        199,\n        214,\n        135,\n        226,\n        174,\n        84,\n        194,\n        43,\n        117,\n        155,\n        111,\n        62,\n        187,\n        203,\n        114,\n        223,\n        230,\n        103,\n        42,\n        89,\n        68,\n        216,\n        14,\n        40,\n        156,\n        198,\n        78,\n        182,\n        179,\n        189\n    ]",
+									"type": "default"
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:8080/game/verify",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"game",
+								"verify"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "14"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"e-3MDSGou3nIOvlBZElUyTiBbaRZY\""
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 25 Jan 2023 09:12:46 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"valid\": true\n}"
+				}
+			]
+		},
+		{
+			"name": "Get Games",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/game/details",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"game",
+						"details"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Get Games",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/game/details",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"game",
+								"details"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "574"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"23e-gx4EJYo3t2wV2+rxoi4vd1OsaRQ\""
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 24 Jan 2023 12:54:19 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"games\": [\n        {\n            \"gameId\": \"0xb337939351723581264030e2bc3287f66eabf067\",\n            \"details\": {\n                \"game_ended\": true,\n                \"player_won\": true,\n                \"date_ended\": \"Tue, 24 Jan 2023 12:53:33 GMT\",\n                \"date_created\": \"Tue, 24 Jan 2023 12:53:20 GMT\"\n            }\n        },\n        {\n            \"gameId\": \"0x29cc063b9d95c3e20b604ad8b2fc398c194c35a7\",\n            \"details\": {\n                \"game_ended\": true,\n                \"player_won\": false,\n                \"date_ended\": \"Tue, 24 Jan 2023 12:53:58 GMT\",\n                \"date_created\": \"Tue, 24 Jan 2023 12:53:50 GMT\"\n            }\n        },\n        {\n            \"gameId\": \"0x6dbed5723c14dc8616c874c18b5b62d46cb51451\",\n            \"details\": {\n                \"date_created\": \"Tue, 24 Jan 2023 12:54:18 GMT\",\n                \"game_ended\": false,\n                \"player_won\": null,\n                \"date_ended\": null\n            }\n        }\n    ]\n}"
+				}
+			]
+		}
+	]
+}

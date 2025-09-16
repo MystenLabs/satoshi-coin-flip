@@ -2,6 +2,7 @@
 
 # production
 **/build
+.idea
 
 # debug
 **/sui.log.*

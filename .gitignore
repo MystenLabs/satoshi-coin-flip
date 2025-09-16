@@ -5,6 +5,8 @@
 **/build
 .env
 .env.production
+node_modules
+dist
 
 # debug
 **/sui.log.*
@@ -14,4 +16,9 @@ satoshi_flip/Move.lock
 .coverage_map.mvcov
 .trace
 package_summaries
+
+# publish
+.env.local
+tx_res.json
+.publish.res.json
 

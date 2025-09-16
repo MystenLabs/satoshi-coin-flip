@@ -6,8 +6,8 @@ import { useConfig } from '../../hooks/useConfig';
 import BigNumber from 'bignumber.js';
 import { useZkLogin } from '@mysten/enoki/react';
 import { formatAmount } from '../../utils/formatAmount';
-import { CoinStruct } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { CoinStruct } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
 
 interface BalanceProviderProps {
     children: ReactElement | ReactElement[];
@@ -67,7 +67,7 @@ export const BalanceProvider = ({ children }: BalanceProviderProps) => {
         return coin?.coinObjectId;
     };
 
-    const getAllCoinsAsTxArgs = (tx: TransactionBlock) => {
+    const getAllCoinsAsTxArgs = (tx: Transaction) => {
         return coinArray.map((coin) => tx.object(coin.coinObjectId));
     };
 

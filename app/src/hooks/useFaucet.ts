@@ -24,7 +24,7 @@ export const useFaucet = () => {
                 },
             });
             // console.log('Faucet response:', resp.data);
-            await client.waitForTransactionBlock({ digest: resp.data.txDigest, timeout: 10_000 });
+            await client.waitForTransaction({ digest: resp.data.txDigest, timeout: 10_000 });
             reFetchData();
         } catch (err) {
             console.error('Faucet error:', err);

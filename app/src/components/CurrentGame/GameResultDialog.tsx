@@ -7,7 +7,7 @@ import won_icon from '../../icons/svg/trophy_won_icon.svg';
 import { Button } from '../General/Button';
 import { LinkExternal } from '../../icons/tsx/LinkExternal';
 import { useConfig } from '../../hooks/useConfig';
-import { MIST_PER_SUI } from '@mysten/sui.js/utils';
+import { MIST_PER_SUI } from '@mysten/sui/utils';
 
 interface GameResultDialogProps {
     result: GameResult | null;

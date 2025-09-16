@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import { TransactionObjectArgument, TransactionBlock } from '@mysten/sui.js/transactions';
+import { TransactionObjectArgument, Transaction } from '@mysten/sui/transactions';
 
 export interface BalanceContextProps {
     balance: number;
@@ -7,6 +7,6 @@ export interface BalanceContextProps {
     isError: boolean;
     reFetchData: () => void;
     getCoin: (amount: number) => string | undefined;
-    getAllCoinsAsTxArgs: (tx: TransactionBlock) => TransactionObjectArgument[];
+    getAllCoinsAsTxArgs: (tx: Transaction) => TransactionObjectArgument[];
     address: string | undefined;
 }

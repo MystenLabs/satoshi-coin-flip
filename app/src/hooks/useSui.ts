@@ -10,13 +10,13 @@ import {
     SuiClient,
     SuiTransactionBlockResponseOptions,
     SuiTransactionBlockResponseQuery,
-} from '@mysten/sui.js/client';
+} from '@mysten/sui/client';
 // import { ExecuteTransactionRequestType } from '@mysten/sui.js/transactions';
 import { useEnokiFlow, useZkLogin } from '@mysten/enoki/react';
 
 import { useConfig } from './useConfig';
-import { TransactionBlock } from '@mysten/sui.js/transactions/';
-import { fromB64, toB64 } from '@mysten/sui.js/utils';
+import { Transaction } from '@mysten/sui/transactions';
+import { fromB64, toB64 } from '@mysten/sui/utils';
 import axios from 'axios';
 
 interface ExecuteSignedTransactionBlockProps {
@@ -44,7 +44,7 @@ export const useSui = () => {
     const enokiSponsorExecute = async ({
         transactionBlock,
     }: {
-        transactionBlock: TransactionBlock;
+        transactionBlock: Transaction;
     }) => {
         transactionBlock.setSender(address!);
         const txBytes = await transactionBlock.build({ client, onlyTransactionKind: true });
@@ -55,7 +55,7 @@ export const useSui = () => {
         const { bytes, digest }: { bytes: string; digest: string } =
             createSponsoredTransactionResp.data;
         const signer = await enokiFlow.getKeypair({ network: 'testnet' });
-        const { signature } = await signer.signTransactionBlock(fromB64(bytes));
+        const { signature } = await signer.signTransaction(fromB64(bytes));
         const executeSponsoredTransactionResp = await axios.post(
             `${API_BASE_URL}/sponsor/execute`,
             {
@@ -64,7 +64,7 @@ export const useSui = () => {
             },
         );
         const { digest: txDigest } = executeSponsoredTransactionResp.data;
-        await client.waitForTransactionBlock({ digest, timeout: 10_000 });
+        await client.waitForTransaction({ digest, timeout: 10_000 });
         return { digest: txDigest };
     };
 
@@ -73,14 +73,14 @@ export const useSui = () => {
         requestType,
         options,
     }: {
-        transactionBlock: TransactionBlock;
+        transactionBlock: Transaction;
         requestType: ExecuteTransactionRequestType;
         options: SuiTransactionBlockResponseOptions;
     }) => {
         const keypair = await enokiFlow.getKeypair();
         // console.log('address', keypair.toSuiAddress());
-        return client.signAndExecuteTransactionBlock({
-            transactionBlock: transactionBlock,
+        return client.signAndExecuteTransaction({
+            transaction: transactionBlock,
             signer: keypair,
             requestType,
             ...(options && { options }),

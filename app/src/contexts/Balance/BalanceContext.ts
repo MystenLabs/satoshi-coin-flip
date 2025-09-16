@@ -1,6 +1,6 @@
 import { createContext } from 'react';
 import { BalanceContextProps } from '../../types/BalanceContextProps';
-import { TransactionObjectArgument, TransactionBlock } from '@mysten/sui.js/transactions';
+import { Transaction } from '@mysten/sui/transactions';
 
 export const BalanceContext = createContext<BalanceContextProps>({
     balance: 0,
@@ -8,6 +8,6 @@ export const BalanceContext = createContext<BalanceContextProps>({
     isError: false,
     reFetchData: async () => {},
     getCoin: (amount: number) => '',
-    getAllCoinsAsTxArgs: (tx: TransactionBlock) => [],
+    getAllCoinsAsTxArgs: (tx: Transaction) => [],
     address: undefined,
 });

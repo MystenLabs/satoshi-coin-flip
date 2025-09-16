@@ -2,9 +2,9 @@
 import { useEffect, useState } from 'react';
 import { useSui } from './useSui';
 import { useZkLogin } from '@mysten/enoki/react';
-import { PaginatedObjectsResponse, SuiObjectResponse } from '@mysten/sui.js/client';
+import { PaginatedObjectsResponse, SuiObjectResponse } from '@mysten/sui/client';
 import { useConfig } from './useConfig';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { Transaction } from '@mysten/sui/transactions';
 import toast from 'react-hot-toast';
 
 export const useGetCounterNFT = () => {
@@ -64,7 +64,7 @@ export const useGetCounterNFT = () => {
     const mintCounterNFT = async () => {
         setCreationLoading(true);
         try {
-            const tx = new TransactionBlock();
+            const tx = new Transaction();
             let counter = tx.moveCall({
                 target: `${PACKAGE_ID}::counter_nft::mint`,
             });
@@ -98,7 +98,7 @@ export const useGetCounterNFT = () => {
     const burnCounterNFT = async () => {
         setCreationLoading(true);
         try {
-            const tx = new TransactionBlock();
+            const tx = new Transaction();
             tx.moveCall({
                 target: `${PACKAGE_ID}::counter_nft::burn`,
                 arguments: [tx.object(counterNFT)],

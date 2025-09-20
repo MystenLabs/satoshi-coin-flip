@@ -1,14 +1,13 @@
 import { CoinSide, GameResult } from '../types/GameHistory';
 import { useState } from 'react';
 import { useSui } from './useSui';
-// import { useWalletKit } from '@mysten/wallet-kit';
 import { useConfig } from './useConfig';
 import { toast } from 'react-hot-toast';
 import { Transaction } from '@mysten/sui/transactions';
-import { bcs } from '@mysten/sui/bcs';
 import { playGameRequest } from '../api/satoshiApi';
 import { useGetBalance } from './useGetBalance';
 import { MIST_PER_SUI } from '@mysten/sui/utils';
+import { startGame } from '../__generated__/satoshi_flip/single_player_satoshi';
 
 export const useGame = (counterNFT: any) => {
     const { enokiSponsorExecute, client } = useSui();
@@ -63,14 +62,14 @@ export const useGame = (counterNFT: any) => {
             tx.mergeCoins(mergeInto, allCoinArgs);
         }
         let coin = tx.splitCoins(mergeInto, [tx.pure.u64(Number(GAME_BALANCE))]);
-        tx.moveCall({
-            target: `${PACKAGE_ID}::single_player_satoshi::start_game`,
-            arguments: [
-                tx.pure(bcs.string().serialize(choice === 'head' ? 'H' : 'T')),
+        startGame({
+            package: PACKAGE_ID,
+            arguments: {
+                guess: choice === 'head' ? 'H' : 'T',
                 coin,
-                tx.object(HOUSE_DATA),
-            ],
-        });
+                houseData: tx.object(HOUSE_DATA),
+            },
+        })(tx);
         // const signedTx = await signTransactionBlock({
         //     transactionBlock: tx,
         // });

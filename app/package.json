@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "lint": "eslint src --max-warnings=0",
     "test": "echo 'No tests yet!'",
-    "prettier:fix": "prettier --write src"
+    "prettier:fix": "prettier --write src",
+    "codegen": "pnpm sui-ts-codegen generate"
   },
   "lint-staged": {
     "*.{js,css,md,ts,tsx}": "prettier --write"
@@ -19,6 +20,7 @@
     "@headlessui/react": "^1.7.19",
     "@heroicons/react": "^2.0.18",
     "@hookform/resolvers": "^3.10.0",
+    "@mysten/codegen": "^0.5.0",
     "@mysten/dapp-kit": "^0.18.0",
     "@mysten/enoki": "0.12.0",
     "@mysten/sui": "1.38.0",

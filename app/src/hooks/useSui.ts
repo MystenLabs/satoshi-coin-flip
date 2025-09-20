@@ -48,26 +48,28 @@ export const useSui = () => {
 
         transactionBlock.setSender(address);
         const txBytes = await transactionBlock.build({ client, onlyTransactionKind: true });
-        const createSponsoredTransactionResp = await axios.post(`${API_BASE_URL}/sponsor/create`, {
-            bytes: toB64(txBytes),
+
+        // Create sponsored transaction via our new Enoki endpoint
+        const createSponsoredTransactionResp = await axios.post('/api/sponsor/prepare', {
+            transactionKindBytes: toB64(txBytes),
             sender: address,
         });
         const { bytes, digest }: { bytes: string; digest: string } =
             createSponsoredTransactionResp.data;
 
+        // Sign the sponsored transaction
         const { signature } = await signTransaction({
             transaction: bytes,
         });
 
-        const executeSponsoredTransactionResp = await axios.post(
-            `${API_BASE_URL}/sponsor/execute`,
-            {
-                digest,
-                signature,
-            },
-        );
+        // Execute the sponsored transaction
+        const executeSponsoredTransactionResp = await axios.post('/api/sponsor/execute', {
+            digest,
+            signature,
+        });
+
         const { digest: txDigest } = executeSponsoredTransactionResp.data;
-        await client.waitForTransaction({ digest, timeout: 10_000 });
+        await client.waitForTransaction({ digest: txDigest, timeout: 10_000 });
         return { digest: txDigest };
     };
 

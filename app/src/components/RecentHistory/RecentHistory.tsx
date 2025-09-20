@@ -39,7 +39,7 @@ export const RecentHistory = ({
                         Sorry, we could not get your games history
                     </div>
                 )}
-                {!!data?.length && (
+                {Array.isArray(data) && !!data?.length && (
                     <div className="shadow-full grid w-full grid-cols-2 place-items-center gap-y-5">
                         <div className="col-span-2 h-full w-full sm:col-span-2 md:col-span-1">
                             <RecentHistoryTable
@@ -57,7 +57,7 @@ export const RecentHistory = ({
                         )}
                     </div>
                 )}
-                {!data?.length && <div className="text-center text-lg">No games played yet</div>}
+                {(!Array.isArray(data) || !data?.length) && !isError && !isLoading && <div className="text-center text-lg">No games played yet</div>}
             </div>
             {!!isPaginationEnabled && (
                 <div className="col-span-12">

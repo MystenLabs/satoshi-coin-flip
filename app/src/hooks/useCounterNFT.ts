@@ -1,7 +1,7 @@
 // import { useWalletKit } from '@mysten/wallet-kit';
 import { useEffect, useState } from 'react';
 import { useSui } from './useSui';
-import { useZkLogin } from '@mysten/enoki/react';
+import { useCurrentAccount } from '@mysten/dapp-kit';
 import { PaginatedObjectsResponse, SuiObjectResponse } from '@mysten/sui/client';
 import { useConfig } from './useConfig';
 import { Transaction } from '@mysten/sui/transactions';
@@ -9,7 +9,8 @@ import toast from 'react-hot-toast';
 
 export const useGetCounterNFT = () => {
     const { PACKAGE_ID } = useConfig({});
-    const { address } = useZkLogin();
+    const currentAccount = useCurrentAccount();
+    const address = currentAccount?.address;
     const { client, enokiSponsorExecute } = useSui();
 
     const [data, setData] = useState<SuiObjectResponse[]>([]);

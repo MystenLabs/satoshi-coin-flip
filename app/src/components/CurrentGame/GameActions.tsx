@@ -1,7 +1,7 @@
 import { Button } from '../General/Button';
 import { CoinSide, GameResult } from '../../types/GameHistory';
 // import { useWalletKit } from '@mysten/wallet-kit';
-import { useZkLogin } from '@mysten/enoki/react';
+import { useCurrentAccount } from '@mysten/dapp-kit';
 
 interface GameActionsProps {
     gameResult: GameResult | null;
@@ -22,8 +22,7 @@ export const GameActions = ({
     handleShowHead,
     handleShowTails,
 }: GameActionsProps) => {
-    // const { currentAccount } = useWalletKit();
-    const zkLogin = useZkLogin();
+    const currentAccount = useCurrentAccount();
 
     if (!isLoading && !gameResult)
         return (
@@ -33,7 +32,7 @@ export const GameActions = ({
                         variant="contained"
                         onMouseOver={handleShowHead}
                         onClick={() => handlePlayGame('head')}
-                        disabled={!zkLogin?.address || !counterNFT}
+                        disabled={!currentAccount?.address || !counterNFT}
                     >
                         Pick Head
                     </Button>
@@ -41,12 +40,12 @@ export const GameActions = ({
                         variant="contained"
                         onMouseOver={handleShowTails}
                         onClick={() => handlePlayGame('tails')}
-                        disabled={!zkLogin?.address || !counterNFT}
+                        disabled={!currentAccount?.address || !counterNFT}
                     >
                         Pick Tails
                     </Button>
                 </div>
-                {!zkLogin?.address && (
+                {!currentAccount?.address && (
                     <div className="text-gray-200">
                         Please connect your wallet to start the game
                     </div>

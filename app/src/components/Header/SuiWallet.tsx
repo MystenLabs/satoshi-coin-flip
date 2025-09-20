@@ -1,30 +1,31 @@
-// import { ConnectButton } from '@mysten/wallet-kit';
-import { useZkLogin } from '@mysten/enoki/react';
-import { SignInButton } from './SignInButton';
-import { SignOutButton } from './SignOutButton';
-import { useAuthCallback } from '@mysten/enoki/react';
+import { ConnectButton, useCurrentAccount, useDisconnectWallet } from '@mysten/dapp-kit';
+import { Button } from '../General/Button';
 
 export const SuiWallet = () => {
-    const zkLogin = useZkLogin();
-    useAuthCallback();
+    const { mutate: disconnect } = useDisconnectWallet();
+    const currentAccount = useCurrentAccount();
 
-    // const handleIdToken = async (idToken: string) => {
-    //     console.log('id_token: ', idToken);
-    //     const res = await enokiFlow.handleAuthCallback(idToken);
-    //     console.log('res', res);
-    // };
-    // useEffect(() => {
-    //     console.log('hash', hash);
-    //     let id_token = hash.split('#id_token=')[1];
-    //     handleIdToken(id_token);
-    //     isLoggedIn().then((res) => setLoggedIn(res));
-    // }, []);
-    // return <ConnectButton />;
+    const handleSignOut = () => {
+        disconnect();
+    };
 
     return (
         <>
-            {!zkLogin?.address && <SignInButton text="Sign in with Google" />}
-            {zkLogin?.address && <SignOutButton text="Sign out" />}
+            {/* Show unified wallet connect button that includes both standard wallets and Enoki wallets */}
+            {!currentAccount && (
+                <ConnectButton />
+            )}
+
+            {/* Show sign out button when connected */}
+            {currentAccount && (
+                <Button
+                    onClick={handleSignOut}
+                    size="small"
+                    className="font-bull-text-bold flex items-center rounded-[58px] bg-slate-600 px-10 py-2 text-white hover:cursor-pointer hover:bg-slate-200 hover:text-black"
+                >
+                    <div className="pr-2 font-[500]">Sign out</div>
+                </Button>
+            )}
         </>
     );
 };

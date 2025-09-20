@@ -4,7 +4,7 @@ import { BalanceContext } from './BalanceContext';
 import { useSui } from '../../hooks/useSui';
 import { useConfig } from '../../hooks/useConfig';
 import BigNumber from 'bignumber.js';
-import { useZkLogin } from '@mysten/enoki/react';
+import { useCurrentAccount } from '@mysten/dapp-kit';
 import { formatAmount } from '../../utils/formatAmount';
 import { CoinStruct } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
@@ -14,8 +14,8 @@ interface BalanceProviderProps {
 }
 
 export const BalanceProvider = ({ children }: BalanceProviderProps) => {
-    // const { currentAccount } = useWalletKit();
-    const { address } = useZkLogin();
+    const currentAccount = useCurrentAccount();
+    const address = currentAccount?.address;
     const { client } = useSui();
     const { COIN_TYPE } = useConfig({});
 

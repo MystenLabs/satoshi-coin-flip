@@ -14,13 +14,13 @@ export const useRecentHistoryQuery = () => {
         queryKey: [ReactQueryKeys.RECENT_HISTORY_GET, currentPage],
         queryFn: () => getRecentHistoryData(currentPage, PAGE_SIZE, API_BASE_URL),
         enabled: !!currentPage,
-        cacheTime: 0,
+        gcTime: 0,
     });
 
     // console.log({ data });
 
     useEffect(() => {
-        if (!data?.length) setPagesNum(0);
+        if (!Array.isArray(data) || !data?.length) setPagesNum(0);
         else setPagesNum(Math.ceil(data.length / PAGE_SIZE) + 1);
     }, [data]);
 

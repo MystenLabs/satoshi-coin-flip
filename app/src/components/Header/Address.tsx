@@ -1,10 +1,11 @@
 import { formatAddress } from '@mysten/sui/utils';
-import { useZkLogin } from '@mysten/enoki/react';
+import { useCurrentAccount } from '@mysten/dapp-kit';
 import { WalletIcon } from '@heroicons/react/24/outline';
 import { toast } from 'react-hot-toast';
 
 export const Address = () => {
-    const { address } = useZkLogin();
+    const currentAccount = useCurrentAccount();
+    const address = currentAccount?.address;
 
     const copyAddress = () => {
         toast.success('Address copied to clipboard!');

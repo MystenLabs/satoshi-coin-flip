@@ -36,7 +36,7 @@ export const CurrentGame = () => {
     };
 
     const refresh = () => {
-        queryClient.invalidateQueries([ReactQueryKeys.RECENT_HISTORY_GET]);
+        queryClient.invalidateQueries({ queryKey: [ReactQueryKeys.RECENT_HISTORY_GET] });
         reFetchBalance();
     };
 

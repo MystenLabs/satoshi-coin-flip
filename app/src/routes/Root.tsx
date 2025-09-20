@@ -27,7 +27,7 @@ export default function Root() {
                     <InfoIcon />
                     <Footer />
                 </div>
-                {import.meta.env.DEV && <ReactQueryDevtools position="bottom-right" />}
+                {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
             </main>
         </BalanceProvider>
         // </WalletKitProvider>

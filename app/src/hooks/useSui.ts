@@ -6,13 +6,9 @@
 
 import {
     ExecuteTransactionRequestType,
-    RPCTransactionRequestParams,
-    SuiClient,
     SuiTransactionBlockResponseOptions,
-    SuiTransactionBlockResponseQuery,
 } from '@mysten/sui/client';
-// import { ExecuteTransactionRequestType } from '@mysten/sui.js/transactions';
-import { useEnokiFlow, useZkLogin } from '@mysten/enoki/react';
+import { useCurrentAccount, useSuiClient, useSignTransaction } from '@mysten/dapp-kit';
 
 import { useConfig } from './useConfig';
 import { Transaction } from '@mysten/sui/transactions';
@@ -26,11 +22,11 @@ interface ExecuteSignedTransactionBlockProps {
 }
 
 export const useSui = () => {
-    const { FULL_NODE, API_BASE_URL } = useConfig({});
-    const enokiFlow = useEnokiFlow();
-    const { address } = useZkLogin();
-
-    const client = new SuiClient({ url: FULL_NODE });
+    const { API_BASE_URL } = useConfig({});
+    const currentAccount = useCurrentAccount();
+    const client = useSuiClient();
+    const { mutateAsync: signTransaction } = useSignTransaction();
+    const address = currentAccount?.address;
 
     const executeSignedTransactionBlock = async ({ signedTx, requestType, options }: any) => {
         return client.executeTransactionBlock({
@@ -46,7 +42,11 @@ export const useSui = () => {
     }: {
         transactionBlock: Transaction;
     }) => {
-        transactionBlock.setSender(address!);
+        if (!address) {
+            throw new Error('No address found');
+        }
+
+        transactionBlock.setSender(address);
         const txBytes = await transactionBlock.build({ client, onlyTransactionKind: true });
         const createSponsoredTransactionResp = await axios.post(`${API_BASE_URL}/sponsor/create`, {
             bytes: toB64(txBytes),
@@ -54,8 +54,11 @@ export const useSui = () => {
         });
         const { bytes, digest }: { bytes: string; digest: string } =
             createSponsoredTransactionResp.data;
-        const signer = await enokiFlow.getKeypair({ network: 'testnet' });
-        const { signature } = await signer.signTransaction(fromB64(bytes));
+
+        const { signature } = await signTransaction({
+            transaction: bytes,
+        });
+
         const executeSponsoredTransactionResp = await axios.post(
             `${API_BASE_URL}/sponsor/execute`,
             {
@@ -77,11 +80,17 @@ export const useSui = () => {
         requestType: ExecuteTransactionRequestType;
         options: SuiTransactionBlockResponseOptions;
     }) => {
-        const keypair = await enokiFlow.getKeypair();
-        // console.log('address', keypair.toSuiAddress());
-        return client.signAndExecuteTransaction({
+        if (!address) {
+            throw new Error('No address found');
+        }
+
+        const { signature } = await signTransaction({
             transaction: transactionBlock,
-            signer: keypair,
+        });
+
+        return client.executeTransactionBlock({
+            transactionBlock: await transactionBlock.build({ client }),
+            signature,
             requestType,
             ...(options && { options }),
         });

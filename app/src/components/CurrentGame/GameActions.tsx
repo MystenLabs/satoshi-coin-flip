@@ -5,7 +5,6 @@ import { useCurrentAccount } from '@mysten/dapp-kit';
 
 interface GameActionsProps {
     gameResult: GameResult | null;
-    counterNFT: any | null;
     isLoading: boolean;
     createGameLoading: boolean;
     handlePlayGame: (choice: CoinSide) => void;
@@ -15,7 +14,6 @@ interface GameActionsProps {
 
 export const GameActions = ({
     gameResult,
-    counterNFT,
     isLoading,
     createGameLoading,
     handlePlayGame,
@@ -32,7 +30,7 @@ export const GameActions = ({
                         variant="contained"
                         onMouseOver={handleShowHead}
                         onClick={() => handlePlayGame('head')}
-                        disabled={!currentAccount?.address || !counterNFT}
+                        disabled={!currentAccount?.address}
                     >
                         Pick Head
                     </Button>
@@ -40,7 +38,7 @@ export const GameActions = ({
                         variant="contained"
                         onMouseOver={handleShowTails}
                         onClick={() => handlePlayGame('tails')}
-                        disabled={!currentAccount?.address || !counterNFT}
+                        disabled={!currentAccount?.address}
                     >
                         Pick Tails
                     </Button>

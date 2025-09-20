@@ -9,7 +9,7 @@ import { useGetBalance } from './useGetBalance';
 import { MIST_PER_SUI } from '@mysten/sui/utils';
 import { startGame } from '../__generated__/satoshi_flip/single_player_satoshi';
 
-export const useGame = (counterNFT: any) => {
+export const useGame = () => {
     const { enokiSponsorExecute, client } = useSui();
     const { balance, getAllCoinsAsTxArgs, reFetchData } = useGetBalance();
     // const { signTransactionBlock } = useWalletKit();

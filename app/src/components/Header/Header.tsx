@@ -2,16 +2,8 @@ import { SuiWallet } from './SuiWallet';
 import { Balance } from './Balance';
 import { NavLink } from 'react-router-dom';
 import { Address } from './Address';
-import { Button } from '../General/Button';
-// import { useGetCounterNFT } from '../../hooks/useCounterNFT';
-// import { useGetNavigations } from '../../hooks/useGetNavigations';
-
-// current displaying only the Logo in the navigations block
-// in the next version the navigations will be displayed via the useGetNavigations hook
 
 export const Header = () => {
-    // const { isAtHomePage, navigationLinks } = useGetNavigations();
-    // const { burnCounterNFT } = useGetCounterNFT();
 
     return (
         <header
@@ -42,9 +34,6 @@ export const Header = () => {
                 <div className="col-span-2 flex justify-end">
                     <SuiWallet />
                 </div>
-                {/* <div>
-                    <Button onClick={burnCounterNFT}>Burn counter</Button>
-                </div> */}
             </div>
         </header>
     );

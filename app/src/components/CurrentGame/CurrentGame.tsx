@@ -7,16 +7,12 @@ import { ReactQueryKeys } from '../../constants/reactQueryKeys';
 import { CoinImages } from './CoinImages';
 import { GameActions } from './GameActions';
 import { useGetBalance } from '../../hooks/useGetBalance';
-import { useGetCounterNFT } from '../../hooks/useCounterNFT';
-import { ActionRequiredDialog } from '../General/ActionRequiredDialog';
 
 export const CurrentGame = () => {
     const queryClient = useQueryClient();
     const { reFetchData: reFetchBalance } = useGetBalance();
     const [isShowingHead, setIsShowingHead] = useState<boolean>(true);
     const [isShowingAllResultsDialog, setIsShowingAllResultsDialog] = useState<boolean>(false);
-    const { counterNFT, address, mintCounterNFT, fetchLoading, creationLoading } =
-        useGetCounterNFT();
     const {
         txnDigest,
         gameResult,
@@ -25,7 +21,7 @@ export const CurrentGame = () => {
         createGameLoading,
         handlePlayGame,
         handleEndGame,
-    } = useGame(counterNFT);
+    } = useGame();
 
     const handleShowHead = () => setIsShowingHead(true);
     const handleShowTails = () => setIsShowingHead(false);
@@ -52,13 +48,6 @@ export const CurrentGame = () => {
 
     return (
         <div className="grid w-full grid-cols-1 place-items-center gap-y-8">
-            <ActionRequiredDialog
-                isOpen={!counterNFT && !!address && !fetchLoading}
-                mintCounterNFT={mintCounterNFT}
-                creationLoading={creationLoading}
-                counterNFT={counterNFT}
-                onClose={() => {}}
-            />
             <div className="text-white">
                 <p className="">
                     Stake <span className="font-bold">0.5 SUI</span> with a 50% chance to win{' '}
@@ -72,7 +61,6 @@ export const CurrentGame = () => {
             />
             <GameActions
                 gameResult={gameResult}
-                counterNFT={counterNFT}
                 isLoading={isLoading}
                 createGameLoading={createGameLoading}
                 handlePlayGame={handlePlayGame}

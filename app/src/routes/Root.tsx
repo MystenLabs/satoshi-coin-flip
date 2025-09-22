@@ -1,6 +1,5 @@
 import { Outlet } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-// import { WalletKitProvider } from '@mysten/wallet-kit';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Header } from '../components/Header/Header';
 import { Footer } from '../components/Footer';
@@ -10,7 +9,6 @@ import { BackgroundElements } from '../components/General/BackgroundElements';
 
 export default function Root() {
     return (
-        // <WalletKitProvider enableUnsafeBurner={import.meta.env.DEV}>
         <BalanceProvider>
             <Toaster position="bottom-center" />
             <div className="sticky top-0 z-50 flex w-full items-center justify-evenly bg-white px-5 py-3">
@@ -30,6 +28,5 @@ export default function Root() {
                 {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
             </main>
         </BalanceProvider>
-        // </WalletKitProvider>
     );
 }

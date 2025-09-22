@@ -1,6 +1,5 @@
-import { ReactElement, useEffect, useState } from 'react';
+import { ReactElement, useEffect, useState, useMemo } from 'react';
 import { BalanceContext } from './BalanceContext';
-// import { useWalletKit } from '@mysten/wallet-kit';
 import { useSui } from '../../hooks/useSui';
 import { useConfig } from '../../hooks/useConfig';
 import BigNumber from 'bignumber.js';
@@ -71,18 +70,18 @@ export const BalanceProvider = ({ children }: BalanceProviderProps) => {
         return coinArray.map((coin) => tx.object(coin.coinObjectId));
     };
 
+    const contextValue = useMemo(() => ({
+        balance,
+        isLoading,
+        isError,
+        reFetchData,
+        getCoin,
+        getAllCoinsAsTxArgs,
+        address,
+    }), [balance, isLoading, isError, reFetchData, getCoin, getAllCoinsAsTxArgs, address]);
+
     return (
-        <BalanceContext.Provider
-            value={{
-                balance,
-                isLoading,
-                isError,
-                reFetchData,
-                getCoin,
-                getAllCoinsAsTxArgs,
-                address,
-            }}
-        >
+        <BalanceContext.Provider value={contextValue}>
             {children}
         </BalanceContext.Provider>
     );

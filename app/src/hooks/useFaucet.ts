@@ -23,12 +23,11 @@ export const useFaucet = () => {
                     Authorization: `Bearer ${currentAccount?.address}`,
                 },
             });
-            // console.log('Faucet response:', resp.data);
             await client.waitForTransaction({ digest: resp.data.txDigest, timeout: 10_000 });
             reFetchData();
         } catch (err) {
             console.error('Faucet error:', err);
-            return Promise.reject('Something bad happened with the faucet');
+            return Promise.reject(new Error('Something bad happened with the faucet'));
         } finally {
             setIsLoading(false);
         }

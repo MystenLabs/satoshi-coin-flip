@@ -1,5 +1,3 @@
-import { useRecentHistoryQuery } from '../../hooks/useRecentHistoryQuery';
-
 interface PaginationSelectorProps {
     pagesNum: number;
     currentPage: number;

@@ -1,25 +1,16 @@
 import { SuiClient } from '@mysten/sui/client';
-
-export interface GameHistoryItem {
-    id: string;
-    dateCreated: string;
-    dateEnded: string | null;
-    coinSide: 'head' | 'tails';
-    result: 'win' | 'loss' | 'pending';
-    balanceChange: number;
-    userStake: number;
-}
+import { GameHistory } from '../types/GameHistory';
 
 export class OnChainHistoryService {
-    private client: SuiClient;
-    private packageId: string;
+    private readonly client: SuiClient;
+    private readonly packageId: string;
 
     constructor(client: SuiClient, packageId: string) {
         this.client = client;
         this.packageId = packageId;
     }
 
-    async getPlayerGameHistory(playerAddress: string, limit: number = 50): Promise<GameHistoryItem[]> {
+    async getPlayerGameHistory(playerAddress: string, limit: number = 50): Promise<GameHistory[]> {
         try {
             // Get NewGame events for this player
             const newGameEvents = await this.client.queryEvents({
@@ -52,7 +43,7 @@ export class OnChainHistoryService {
             }
 
             // Process NewGame events and match with outcomes
-            const gameHistory: GameHistoryItem[] = [];
+            const gameHistory: GameHistory[] = [];
 
             for (const event of newGameEvents.data) {
                 const gameData = event.parsedJson as {

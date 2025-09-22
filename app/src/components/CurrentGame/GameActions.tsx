@@ -1,6 +1,5 @@
 import { Button } from '../General/Button';
 import { CoinSide, GameResult } from '../../types/GameHistory';
-// import { useWalletKit } from '@mysten/wallet-kit';
 import { useCurrentAccount } from '@mysten/dapp-kit';
 
 interface GameActionsProps {

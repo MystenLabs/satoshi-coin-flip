@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { RecentHistoryHeader } from './RecentHistoryHeader';
 import { RecentHistoryTable } from './RecentHistoryTable';
 import { GameTransactionsTable } from './GameTransactionsTable';

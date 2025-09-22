@@ -1,12 +1,13 @@
 export type CoinSide = 'head' | 'tails';
-export type GameResult = 'win' | 'loss';
+export type GameResult = 'win' | 'loss' | 'pending';
 export interface GameHistory {
     id: string;
     coinSide: CoinSide;
     result: GameResult;
     balanceChange: number;
     dateCreated: string;
-    dateEnded: string;
+    dateEnded: string | null;
+    userStake: number;
 }
 
 export type GameTransactionType = 'newGame' | 'playGame' | 'endGame';

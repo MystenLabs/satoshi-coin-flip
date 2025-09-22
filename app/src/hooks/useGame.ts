@@ -6,12 +6,14 @@ import { useConfig } from './useConfig';
 import { toast } from 'react-hot-toast';
 import { Transaction, coinWithBalance } from '@mysten/sui/transactions';
 import { useGetBalance } from './useGetBalance';
+import { useOnChainHistory } from './useOnChainHistory';
 import { MIST_PER_SUI } from '@mysten/sui/utils';
 import { startGame, finishGame } from '../__generated__/satoshi_flip/single_player_satoshi';
 
 export const useGame = () => {
     const { enokiSponsorExecute, client } = useSui();
     const { balance, reFetchData } = useGetBalance();
+    const { refetch: refetchHistory } = useOnChainHistory();
     const currentAccount = useCurrentAccount();
     const { GAME_BALANCE, PACKAGE_ID, HOUSE_DATA } = useConfig({});
     const [isLoading, setIsLoading] = useState(false);
@@ -142,6 +144,7 @@ export const useGame = () => {
                 setGameResult(playerWon ? 'win' : 'loss');
                 setTxnDigest(result.digest);
                 reFetchData(); // Refresh balance after game completion
+                refetchHistory(); // Refresh game history
             } else {
                 console.log('finish game transaction failed');
                 toast.error('Game could not be finished.');

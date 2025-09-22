@@ -14,7 +14,7 @@ export function RegisterEnokiWallets() {
             apiKey: config.ENOKI_API_KEY,
             providers: {
                 google: {
-                    clientId: '50060024202-3m1ruh1frqt0skl6nsied0oaf2gnscd3.apps.googleusercontent.com',
+                    clientId: '960310698970-gh4qfr999a2ped8eqiridhdpb4cjmlqn.apps.googleusercontent.com',
                 },
             },
             client,

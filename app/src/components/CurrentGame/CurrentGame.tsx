@@ -3,13 +3,14 @@ import { useGame } from '../../hooks/useGame';
 import { GameResultDialog } from './GameResultDialog';
 import { RecentHistoryDialog } from '../RecentHistory/RecentHistoryDialog';
 import { useQueryClient } from '@tanstack/react-query';
-import { ReactQueryKeys } from '../../constants/reactQueryKeys';
+import { useCurrentAccount } from '@mysten/dapp-kit';
 import { CoinImages } from './CoinImages';
 import { GameActions } from './GameActions';
 import { useGetBalance } from '../../hooks/useGetBalance';
 
 export const CurrentGame = () => {
     const queryClient = useQueryClient();
+    const currentAccount = useCurrentAccount();
     const { reFetchData: reFetchBalance } = useGetBalance();
     const [isShowingHead, setIsShowingHead] = useState<boolean>(true);
     const [isShowingAllResultsDialog, setIsShowingAllResultsDialog] = useState<boolean>(false);
@@ -32,7 +33,7 @@ export const CurrentGame = () => {
     };
 
     const refresh = () => {
-        queryClient.invalidateQueries({ queryKey: [ReactQueryKeys.RECENT_HISTORY_GET] });
+        queryClient.invalidateQueries({ queryKey: ['onChainHistory', currentAccount?.address] });
         reFetchBalance();
     };
 

@@ -24,10 +24,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       network: serverConfig.SUI_NETWORK_NAME as any,
       transactionKindBytes,
       sender: sender,
-      allowedAddresses: [
-        sender,
-        ...(serverConfig.ADMIN_ADDRESS ? [serverConfig.ADMIN_ADDRESS] : [])
-      ],
+      allowedAddresses: [sender],
       allowedMoveCallTargets: [
         // Satoshi coin flip game functions
         getMoveTarget('single_player_satoshi', 'start_game'),

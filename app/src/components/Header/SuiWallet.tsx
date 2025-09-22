@@ -20,6 +20,7 @@ export const SuiWallet = () => {
             {currentAccount && (
                 <Button
                     onClick={handleSignOut}
+                    variant="text"
                     size="small"
                     className="font-bull-text-bold flex items-center rounded-[58px] bg-slate-600 px-10 py-2 text-white hover:cursor-pointer hover:bg-slate-200 hover:text-black"
                 >

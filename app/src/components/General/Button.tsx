@@ -8,7 +8,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const buttonVariantClasses = {
-    contained: 'bg-primary hover:bg-light text-black',
+    contained: 'bg-white hover:bg-gray-100 text-black',
     contained_disabled: 'bg-gray-200 text-gray-400',
     outlined: 'border border-primary hover:border-light text-primary',
     outlined_disabled: 'border border-gray-200 text-gray-400',

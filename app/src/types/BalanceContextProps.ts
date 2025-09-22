@@ -1,4 +1,3 @@
-import BigNumber from 'bignumber.js';
 import { TransactionObjectArgument, Transaction } from '@mysten/sui/transactions';
 
 export interface BalanceContextProps {

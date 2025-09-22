@@ -7,11 +7,15 @@ interface CoinSpinnerProps {
 }
 
 export const CoinSpinner = ({ isShowingHead, setIsShowingHead }: CoinSpinnerProps) => {
+    console.log('CoinSpinner rendering, isShowingHead:', isShowingHead);
+
     const handleAnimationIteration = () => {
+        console.log('Animation iteration - switching coin');
         setIsShowingHead(!isShowingHead);
     };
 
     const handleAnimationStart = () => {
+        console.log('Animation started');
         setTimeout(() => {
             setIsShowingHead(!isShowingHead);
         }, 400); // Switch faster for more dynamic effect
@@ -22,7 +26,7 @@ export const CoinSpinner = ({ isShowingHead, setIsShowingHead }: CoinSpinnerProp
             <img
                 src={isShowingHead ? head_image : tails_image}
                 alt={isShowingHead ? 'Head' : 'Tails'}
-                className="h-64 w-64 animate-flip-fast drop-shadow-lg"
+                className="h-64 w-64 animate-flip-vertical drop-shadow-lg"
                 onAnimationIteration={handleAnimationIteration}
                 onAnimationStart={handleAnimationStart}
             />

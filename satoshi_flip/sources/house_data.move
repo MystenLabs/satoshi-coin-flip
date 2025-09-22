@@ -62,7 +62,7 @@ public fun initialize_house_data(house_cap: HouseCap, coin: Coin<SUI>, ctx: &mut
         balance: coin.into_balance(),
         house: ctx.sender(),
         max_stake: 50_000_000_000, // 50 SUI, 1 SUI = 10^9.
-        min_stake: 1_000_000_000, // 1 SUI.
+        min_stake: 500_000_000, // 0.5 SUI.
         fees: balance::zero(),
         base_fee_in_bp: 100, // 1% in basis points.
     };

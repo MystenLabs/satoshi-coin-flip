@@ -26,7 +26,7 @@ export const Footer = () => {
                 <NavLink to="/" className="text-center underline">
                     Satoshi Coin Flip
                 </NavLink>{' '}
-                © 2024 by{' '}
+                © {new Date().getFullYear()} by{' '}
                 <NavLink
                     to="https://mystenlabs.com/"
                     target="_blank"

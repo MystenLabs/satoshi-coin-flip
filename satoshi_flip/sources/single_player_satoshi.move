@@ -85,8 +85,7 @@ public fun start_game(
 /// Anyone can end the game (game & house_data objects are shared).
 /// Uses Sui's native randomness for secure, trustless random number generation.
 /// An Outcome event is emitted to signal that the game has ended.
-#[allow(lint(public_random))]
-public fun finish_game(
+entry fun finish_game(
     game_id: ID,
     house_data: &mut HouseData,
     random_state: &Random,

@@ -54,7 +54,10 @@ export const useGame = () => {
         }
 
         // Use coinWithBalance utility to handle coin merging/splitting automatically
-        const coin = coinWithBalance({ balance: Number(GAME_BALANCE) })(tx);
+        const coin = coinWithBalance({
+            balance: Number(GAME_BALANCE),
+            useGasCoin: false // Important for Enoki sponsorship
+        })(tx);
         startGame({
             package: PACKAGE_ID,
             arguments: {

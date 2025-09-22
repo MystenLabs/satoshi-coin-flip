@@ -2,12 +2,15 @@ import { useGetBalance } from '../../hooks/useGetBalance';
 import { Coin } from '../../icons/tsx/Coin';
 import { useFaucet } from '../../hooks/useFaucet';
 import { BallTriangle } from 'react-loader-spinner';
+import {useConfig} from "../../hooks/useConfig";
 
 export const Balance = () => {
     const { balance, address } = useGetBalance();
     const { requestSui, isLoading } = useFaucet();
+  const { GAME_BALANCE } = useConfig({});
 
     if (!address) return null;
+
     return (
         <>
             {balance > 0 && (
@@ -17,13 +20,16 @@ export const Balance = () => {
                 </div>
             )}
 
-            {balance == 0 && (
+            {balance < +GAME_BALANCE && (
                 <div className="flex items-center justify-center space-x-2 rounded-full border-2 border-solid border-gray-700 px-5 py-3">
                     <Coin color="#FFD600" />
                     {!isLoading && (
-                        <div onClick={requestSui} className="font-bold hover:cursor-pointer">
+                        <button
+                            onClick={requestSui}
+                            className="font-bold hover:cursor-pointer bg-transparent border-none text-inherit"
+                        >
                             Request SUI
-                        </div>
+                        </button>
                     )}
                     {isLoading && <BallTriangle width={25} height={25} color="#FFD600" />}
                 </div>

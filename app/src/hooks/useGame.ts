@@ -24,6 +24,7 @@ export const useGame = () => {
     const [txnDigest, setTxnDigest] = useState<string | null>(null);
 
     const handlePlayGame = async (choice: CoinSide) => {
+        console.log('handlePlayGame - setting isLoading to true');
         setChoice(choice);
         setIsLoading(true);
         setCreateGameLoading(true);
@@ -148,6 +149,7 @@ export const useGame = () => {
                 setTxnDigest(result.digest);
                 reFetchData(); // Refresh balance after game completion
                 refetchHistory(); // Refresh game history
+                console.log('Game completed - setting isLoading to false');
                 setIsLoading(false); // Stop spinning after game completes
             } else {
                 console.log('finish game transaction failed');

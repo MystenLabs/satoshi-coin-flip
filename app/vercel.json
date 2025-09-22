@@ -5,7 +5,7 @@
   "installCommand": "pnpm install",
   "functions": {
     "api/**/*.ts": {
-      "runtime": "@vercel/node"
+      "runtime": "nodejs22.x"
     }
   },
   "rewrites": [

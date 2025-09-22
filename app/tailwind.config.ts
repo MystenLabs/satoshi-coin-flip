@@ -13,6 +13,7 @@ export default {
       },
       animation: {
         'flip-vertical': 'flip-vertical 2s ease-in-out infinite',
+        'flip-fast': 'flip-vertical 0.8s ease-in-out infinite',
       },
       keyframes: {
         'flip-vertical': {

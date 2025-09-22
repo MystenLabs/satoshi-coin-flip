@@ -7,18 +7,14 @@ interface CoinSpinnerProps {
 }
 
 export const CoinSpinner = ({ isShowingHead, setIsShowingHead }: CoinSpinnerProps) => {
-    const handleAnimationIteration = (event: any) => {
-        if (event.elapsedTime >= 1) {
-            setTimeout(() => {
-                setIsShowingHead(!isShowingHead);
-            }, 1000);
-        }
+    const handleAnimationIteration = () => {
+        setIsShowingHead(!isShowingHead);
     };
 
     const handleAnimationStart = () => {
         setTimeout(() => {
             setIsShowingHead(!isShowingHead);
-        }, 1000);
+        }, 400); // Switch faster for more dynamic effect
     };
 
     return (
@@ -26,7 +22,7 @@ export const CoinSpinner = ({ isShowingHead, setIsShowingHead }: CoinSpinnerProp
             <img
                 src={isShowingHead ? head_image : tails_image}
                 alt={isShowingHead ? 'Head' : 'Tails'}
-                className="h-64 animate-flip-vertical"
+                className="h-64 w-64 animate-flip-fast drop-shadow-lg"
                 onAnimationIteration={handleAnimationIteration}
                 onAnimationStart={handleAnimationStart}
             />

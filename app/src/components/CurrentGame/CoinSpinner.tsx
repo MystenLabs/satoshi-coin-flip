@@ -7,15 +7,11 @@ interface CoinSpinnerProps {
 }
 
 export const CoinSpinner = ({ isShowingHead, setIsShowingHead }: CoinSpinnerProps) => {
-    console.log('CoinSpinner rendering, isShowingHead:', isShowingHead);
-
     const handleAnimationIteration = () => {
-        console.log('Animation iteration - switching coin');
         setIsShowingHead(!isShowingHead);
     };
 
     const handleAnimationStart = () => {
-        console.log('Animation started');
         setTimeout(() => {
             setIsShowingHead(!isShowingHead);
         }, 400);

@@ -9,10 +9,7 @@ interface CoinImagesProps {
 }
 
 export const CoinImages = ({ isLoading, isShowingHead, setIsShowingHead }: CoinImagesProps) => {
-    console.log('CoinImages - isLoading:', isLoading);
-
     if (isLoading) {
-        console.log('Showing CoinSpinner');
         return <CoinSpinner isShowingHead={isShowingHead} setIsShowingHead={setIsShowingHead} />;
     }
     return (

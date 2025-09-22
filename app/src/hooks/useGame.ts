@@ -29,7 +29,7 @@ export const useGame = () => {
         setCreateGameLoading(true);
         await handleNewGame(choice)
             .then(() => {
-                setIsLoading(false);
+                // Don't set isLoading to false here - keep spinning until finish game completes
             })
             .catch((err) => {
                 console.log(err);
@@ -148,13 +148,16 @@ export const useGame = () => {
                 setTxnDigest(result.digest);
                 reFetchData(); // Refresh balance after game completion
                 refetchHistory(); // Refresh game history
+                setIsLoading(false); // Stop spinning after game completes
             } else {
                 console.log('finish game transaction failed');
                 toast.error('Game could not be finished.');
+                setIsLoading(false); // Stop spinning on error
             }
         } catch (err) {
             console.log('Error finishing game:', err);
             toast.error('Something went wrong, game could not be finished.');
+            setIsLoading(false); // Stop spinning on error
         }
     };
 

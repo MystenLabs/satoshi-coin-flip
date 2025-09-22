@@ -60,7 +60,6 @@ function checkEnd(req: Request, res: Response, next: NextFunction) {
 function checkSinglePlayerEnd(req: Request, res: Response, next: NextFunction) {
   try {
     if (!req?.body?.gameId) throw new Error('Parameter "gameId" is required');
-    if (!req?.body?.blsSig) throw new Error('Parameter "blsSig" is required');
   } catch (error) {
     res.status(errorCode);
     next(error);

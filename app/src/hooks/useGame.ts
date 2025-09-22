@@ -1,19 +1,19 @@
 import { CoinSide, GameResult } from '../types/GameHistory';
 import { useState } from 'react';
 import { useSui } from './useSui';
+import { useCurrentAccount } from '@mysten/dapp-kit';
 import { useConfig } from './useConfig';
 import { toast } from 'react-hot-toast';
-import { Transaction } from '@mysten/sui/transactions';
-import { playGameRequest } from '../api/satoshiApi';
+import { Transaction, coinWithBalance } from '@mysten/sui/transactions';
 import { useGetBalance } from './useGetBalance';
 import { MIST_PER_SUI } from '@mysten/sui/utils';
-import { startGame } from '../__generated__/satoshi_flip/single_player_satoshi';
+import { startGame, finishGame } from '../__generated__/satoshi_flip/single_player_satoshi';
 
 export const useGame = () => {
     const { enokiSponsorExecute, client } = useSui();
-    const { balance, getAllCoinsAsTxArgs, reFetchData } = useGetBalance();
-    // const { signTransactionBlock } = useWalletKit();
-    const { GAME_BALANCE, PACKAGE_ID, HOUSE_DATA, API_BASE_URL } = useConfig({});
+    const { balance, reFetchData } = useGetBalance();
+    const currentAccount = useCurrentAccount();
+    const { GAME_BALANCE, PACKAGE_ID, HOUSE_DATA } = useConfig({});
     const [isLoading, setIsLoading] = useState(false);
     const [createGameLoading, setCreateGameLoading] = useState(false);
     const [gameResult, setGameResult] = useState<GameResult | null>(null);
@@ -46,22 +46,13 @@ export const useGame = () => {
 
     const handleNewGame = async (choice: CoinSide) => {
         const tx = new Transaction();
-        // let coinId = getCoin(Number(GAME_BALANCE));
-        // if (!coinId) throw new Error('No coin found');
-        // let coin = tx.splitCoins(tx.gas, [tx.pure(Number(GAME_BALANCE))]);
 
         if (balance < +GAME_BALANCE / Number(MIST_PER_SUI)) {
             throw new Error('Low Balance');
         }
 
-        // We first merge all coins and then split the amount we need
-        const allCoinArgs = getAllCoinsAsTxArgs(tx);
-        if (!allCoinArgs || allCoinArgs?.length === 0) throw new Error('No coins found');
-        const mergeInto = allCoinArgs.pop()!;
-        if (allCoinArgs.length > 0) {
-            tx.mergeCoins(mergeInto, allCoinArgs);
-        }
-        let coin = tx.splitCoins(mergeInto, [tx.pure.u64(Number(GAME_BALANCE))]);
+        // Use coinWithBalance utility to handle coin merging/splitting automatically
+        const coin = coinWithBalance({ balance: Number(GAME_BALANCE) })(tx);
         startGame({
             package: PACKAGE_ID,
             arguments: {
@@ -70,9 +61,6 @@ export const useGame = () => {
                 houseData: tx.object(HOUSE_DATA),
             },
         })(tx);
-        // const signedTx = await signTransactionBlock({
-        //     transactionBlock: tx,
-        // });
         const executionRes = await enokiSponsorExecute({ transactionBlock: tx });
         return client
             .getTransactionBlock({
@@ -83,7 +71,6 @@ export const useGame = () => {
                 },
             })
             .then((resp) => {
-                // console.log(resp);
                 if (resp.effects?.status.status === 'success') {
                     const events = resp.events;
                     const createdGame = events?.find((o) => o.type.includes('::NewGame'))
@@ -95,13 +82,11 @@ export const useGame = () => {
                         user_stake: string;
                     };
                     const gameObjectId = createdGame.game_id;
-                    const txnDigest = resp.digest;
-                    if (!!gameObjectId) {
+                    if (gameObjectId) {
                         setCurrentGameId(gameObjectId);
                         reFetchData();
                         setCreateGameLoading(false);
-                        // setTxnDigest(txnDigest);
-                        return playGame(gameObjectId, txnDigest);
+                        return playGame(gameObjectId);
                     }
                     setCurrentGameId(null);
                 } else {
@@ -119,57 +104,52 @@ export const useGame = () => {
             .finally(() => {
                 setCreateGameLoading(false);
             });
-
-        // Simple Enoki execution without sponsoring gas
-        // console.log('creating game...');
-        // return enokiExecute({
-        //     transactionBlock: tx,
-        //     requestType: 'WaitForLocalExecution',
-        //     options: {
-        //         showEffects: true,
-        //         showEvents: true,
-        //     },
-        // })
-        //     .then((resp) => {
-        //         console.log(resp);
-        //         if (resp.effects?.status.status === 'success') {
-        //             const createdObjects = resp.effects?.created;
-        //             const createdGame = createdObjects?.[0];
-        //             const gameObjectId = createdGame?.reference.objectId;
-        //             const txnDigest = resp.digest;
-        //             if (!!gameObjectId) {
-        //                 setCurrentGameId(gameObjectId);
-        //                 return playGame(gameObjectId, userRandomnessHexString, txnDigest);
-        //             }
-        //             setCurrentGameId(null);
-        //         } else {
-        //             setCurrentGameId(null);
-        //             console.log('game creation failed');
-        //             toast.error('Sorry, game could not be played.');
-        //         }
-        //     })
-        //     .catch((err) => {
-        //         setCurrentGameId(null);
-        //         console.log('game creation failed');
-        //         console.log(err);
-        //         toast.error('Something went wrong, game could not be started.');
-        //     });
     };
 
-    const playGame = async (gameObjectId: string, txnDigest: string) => {
-        // console.log('playing game...');
-        return playGameRequest(API_BASE_URL, gameObjectId, txnDigest)
-            .then((resp) => {
-                // console.log(resp);
-                const { playerWon, transactionDigest } = resp.data;
-                // console.log({ data: resp.data });
-                setGameResult(playerWon ? 'win' : 'loss');
-                setTxnDigest(transactionDigest);
-            })
-            .catch((err) => {
-                console.log(err);
-                toast.error('Something went wrong, game could not be played.');
+    const playGame = async (gameObjectId: string) => {
+        console.log('finishing game with user transaction...');
+        if (!currentAccount?.address) {
+            throw new Error('No wallet connected');
+        }
+
+        const tx = new Transaction();
+        finishGame({
+            package: PACKAGE_ID,
+            arguments: {
+                gameId: tx.object(gameObjectId),
+                houseData: tx.object(HOUSE_DATA),
+            },
+        })(tx);
+
+        try {
+            const executionRes = await enokiSponsorExecute({ transactionBlock: tx });
+            const result = await client.getTransactionBlock({
+                digest: executionRes.digest,
+                options: {
+                    showEffects: true,
+                    showEvents: true,
+                },
             });
+
+            if (result.effects?.status.status === 'success') {
+                const events = result.events;
+                const outcomeEvent = events?.find((event) =>
+                    event.type.includes('::Outcome')
+                )?.parsedJson as { game_id: string; status: number };
+
+                console.log('outcome event', outcomeEvent);
+                const playerWon = outcomeEvent?.status === 1;
+                setGameResult(playerWon ? 'win' : 'loss');
+                setTxnDigest(result.digest);
+                reFetchData(); // Refresh balance after game completion
+            } else {
+                console.log('finish game transaction failed');
+                toast.error('Game could not be finished.');
+            }
+        } catch (err) {
+            console.log('Error finishing game:', err);
+            toast.error('Something went wrong, game could not be finished.');
+        }
     };
 
     const handleEndGame = () => {

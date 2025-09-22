@@ -1,28 +1,14 @@
-// import {
-//     ExecuteTransactionRequestType,
-//     SignedTransaction,
-//     SuiTransactionBlockResponseOptions,
-// } from '@mysten/sui.js';
-
 import {
     ExecuteTransactionRequestType,
     SuiTransactionBlockResponseOptions,
 } from '@mysten/sui/client';
 import { useCurrentAccount, useSuiClient, useSignTransaction } from '@mysten/dapp-kit';
 
-import { useConfig } from './useConfig';
 import { Transaction } from '@mysten/sui/transactions';
-import { fromB64, toB64 } from '@mysten/sui/utils';
+import { toBase64 } from '@mysten/sui/utils';
 import axios from 'axios';
 
-interface ExecuteSignedTransactionBlockProps {
-    signedTx: any;
-    requestType: any;
-    options?: any;
-}
-
 export const useSui = () => {
-    const { API_BASE_URL } = useConfig({});
     const currentAccount = useCurrentAccount();
     const client = useSuiClient();
     const { mutateAsync: signTransaction } = useSignTransaction();
@@ -51,7 +37,7 @@ export const useSui = () => {
 
         // Create sponsored transaction via our new Enoki endpoint
         const createSponsoredTransactionResp = await axios.post('/api/sponsor/prepare', {
-            transactionKindBytes: toB64(txBytes),
+            transactionKindBytes: toBase64(txBytes),
             sender: address,
         });
         const { bytes, digest }: { bytes: string; digest: string } =

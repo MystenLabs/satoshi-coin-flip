@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { enokiClient } from '../lib/enokiClient.js';
-import { serverConfig } from '../lib/config.js';
-import getMoveTarget from '../lib/getMoveTarget.js';
+import { enokiClient } from '../lib/enokiClient';
+import { serverConfig } from '../lib/config';
+import getMoveTarget from '../lib/getMoveTarget';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {

@@ -12,7 +12,7 @@ export const Balance = () => {
     if (!address) return null;
 
     return (
-        <>
+        <div className="flex items-center space-x-4">
             {balance > 0 && (
                 <div className="flex items-center justify-center space-x-2 rounded-full border-2 border-solid border-gray-700 px-5 py-3">
                     <Coin color="#FFD600" />
@@ -34,6 +34,6 @@ export const Balance = () => {
                     {isLoading && <BallTriangle width={25} height={25} color="#FFD600" />}
                 </div>
             )}
-        </>
+        </div>
     );
 };

@@ -21,7 +21,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const sponsored = await enokiClient.createSponsoredTransaction({
-      network: serverConfig.SUI_NETWORK_NAME as any,
+      network: serverConfig.ENOKI_NETWORK as any,
       transactionKindBytes,
       sender: sender,
       allowedAddresses: [sender],

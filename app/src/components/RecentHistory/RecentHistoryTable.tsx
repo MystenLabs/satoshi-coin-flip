@@ -22,11 +22,13 @@ export const RecentHistoryTable = ({
 }: RecentHistoryTableProps) => {
     useEffect(() => {
         if (data && data.length > 0) {
-            handleSelectGame(data[0].id);
+            if (!selectedGameId) {
+                handleSelectGame(data[0].id);
+            }
         } else {
             handleSelectGame(null);
         }
-    }, [data]);
+    }, [data, selectedGameId]);
 
     const renderCoinSide = (coinSide: CoinSide) => {
         let text = 'Head';
@@ -69,7 +71,7 @@ export const RecentHistoryTable = ({
                                     balanceChange > 0 ? 'text-green-500' : 'text-red-600'
                                 }`}
                             >
-                                {displayLargeNumber(balanceChange)}
+                                {displayLargeNumber(balanceChange)} SUI
                             </div>
                         </td>
                         <td className="pl-4">

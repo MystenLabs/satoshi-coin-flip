@@ -6,13 +6,20 @@ import { LinkExternal } from '../../icons/tsx/LinkExternal';
 import { PlayIcon } from '../../icons/tsx/PlayIcon';
 import { GameTransactionType } from '../../types/GameHistory';
 import { cloneElement } from 'react';
+import { useConfig } from '../../hooks/useConfig';
 
 interface GameTransactionsTableProps {
     gameId: string;
 }
 
 export const GameTransactionsTable = ({ gameId }: GameTransactionsTableProps) => {
-    const { data, isLoading, isError } = useGetTransactionsOfGame(gameId);
+    const { data } = useGetTransactionsOfGame(gameId);
+    const { FULL_NODE: SUI_NETWORK } = useConfig({});
+
+    const getSuiscanUrl = (txId: string) => {
+        const network = SUI_NETWORK.includes('mainnet') ? 'mainnet' : 'testnet';
+        return `https://suiscan.xyz/${network}/tx/${txId}`;
+    };
 
     const renderTransactionType = (type: GameTransactionType) => {
         let text = 'End Game Tx';
@@ -43,7 +50,12 @@ export const GameTransactionsTable = ({ gameId }: GameTransactionsTableProps) =>
                         <td className="py-5 pr-4">
                             <div className="flex items-center justify-between space-x-2">
                                 <div>{truncateObjectId(id)}</div>
-                                <a href="#">
+                                <a
+                                    href={getSuiscanUrl(id)}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="hover:opacity-80"
+                                >
                                     <button>
                                         <LinkExternal className="w-4" color="#FFD600" />
                                     </button>

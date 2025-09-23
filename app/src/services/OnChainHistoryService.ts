@@ -1,5 +1,6 @@
 import { SuiClient } from '@mysten/sui/client';
 import { GameHistory } from '../types/GameHistory';
+import { MIST_PER_SUI } from '@mysten/sui/utils';
 
 export class OnChainHistoryService {
     private readonly client: SuiClient;
@@ -70,10 +71,10 @@ export class OnChainHistoryService {
                     dateEnded = outcome.timestamp;
                     if (outcome.status === 1) { // PLAYER_WON_STATE
                         result = 'win';
-                        balanceChange = userStake; // Player gets back their stake + house stake
+                        balanceChange = userStake / Number(MIST_PER_SUI); // Convert to SUI
                     } else if (outcome.status === 2) { // HOUSE_WON_STATE
                         result = 'loss';
-                        balanceChange = -userStake; // Player loses their stake
+                        balanceChange = -userStake / Number(MIST_PER_SUI); // Convert to SUI
                     }
                 }
 

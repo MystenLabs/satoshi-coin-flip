@@ -6,7 +6,7 @@ import { useConfig } from "../../hooks/useConfig";
 import { MIST_PER_SUI } from '@mysten/sui/utils';
 
 export const Balance = () => {
-    const { balance, address } = useGetBalance();
+    const { balance, address, isLoading: balanceLoading, isError } = useGetBalance();
     const { requestSui, isLoading } = useFaucet();
   const { GAME_BALANCE } = useConfig({});
 
@@ -14,14 +14,21 @@ export const Balance = () => {
 
     return (
         <div className="flex items-center space-x-4">
-            {balance > 0 && (
+            {balanceLoading && (
+                <div className="flex items-center justify-center space-x-2 rounded-full border-2 border-solid border-gray-700 px-5 py-3">
+                    <BallTriangle width={25} height={25} color="#FFD600" />
+                    <div className="font-bold">Loading...</div>
+                </div>
+            )}
+
+            {!balanceLoading && balance > 0 && (
                 <div className="flex items-center justify-center space-x-2 rounded-full border-2 border-solid border-gray-700 px-5 py-3">
                     <Coin color="#FFD600" />
                     <div className="font-bold">{balance} SUI</div>
                 </div>
             )}
 
-            {balance < +GAME_BALANCE / Number(MIST_PER_SUI) && (
+            {!balanceLoading && (isError || balance < +GAME_BALANCE / Number(MIST_PER_SUI)) && (
                 <div className="flex items-center justify-center space-x-2 rounded-full border-2 border-solid border-gray-700 px-5 py-3">
                     {!isLoading && <Coin color="#FFD600" />}
                     {!isLoading && (
@@ -29,7 +36,7 @@ export const Balance = () => {
                             onClick={requestSui}
                             className="font-bold hover:cursor-pointer bg-transparent border-none text-inherit"
                         >
-                            Request SUI
+                            {isError ? 'Get SUI' : 'Request SUI'}
                         </button>
                     )}
                     {isLoading && (

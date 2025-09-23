@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState, useMemo } from 'react';
+import { ReactElement, useEffect, useState, useMemo, useCallback } from 'react';
 import { BalanceContext } from './BalanceContext';
 import { useSui } from '../../hooks/useSui';
 import { useConfig } from '../../hooks/useConfig';
@@ -25,41 +25,52 @@ export const BalanceProvider = ({ children }: BalanceProviderProps) => {
 
     useEffect(() => {
         if (address) {
+            console.log('BalanceProvider: Address changed, fetching balance for:', address);
             reFetchData();
         } else {
+            console.log('BalanceProvider: No address, resetting balance');
             setBalance(0);
             setIsLoading(false);
             setisError(false);
         }
-    }, [address]);
+    }, [address, client, COIN_TYPE]);
 
-    const reFetchData = async () => {
+    const reFetchData = useCallback(async () => {
+        if (!address) {
+            console.log('BalanceProvider: No address available for fetch');
+            return;
+        }
+
         setIsLoading(true);
-        client
-            .getAllCoins({
-                owner: address!,
-            })
-            .then((res) => {
-                // console.log(res);
-                setCoinArray(res.data);
-                const coins = res.data.filter(({ coinType }) => coinType === COIN_TYPE);
-                const sum = coins.reduce(
-                    (acc, { balance }) => BigNumber(balance).plus(acc),
-                    BigNumber(0),
-                );
-                let total = sum.dividedBy(1e9);
-                let formatedTotal = formatAmount(total);
-                // console.log('Refetch Total:', formatedTotal);
-                setBalance(+formatedTotal);
-                setIsLoading(false);
-                setisError(false);
-            })
-            .catch((err) => {
-                console.log(err);
-                setIsLoading(false);
-                setisError(true);
+        console.log('BalanceProvider: Starting balance fetch for address:', address);
+        console.log('BalanceProvider: Using COIN_TYPE:', COIN_TYPE);
+
+        try {
+            const res = await client.getAllCoins({
+                owner: address,
             });
-    };
+
+            console.log('BalanceProvider: getAllCoins response:', res);
+            setCoinArray(res.data);
+            const coins = res.data.filter(({ coinType }) => coinType === COIN_TYPE);
+            console.log('BalanceProvider: Filtered coins for COIN_TYPE:', coins);
+            const sum = coins.reduce(
+                (acc, { balance }) => BigNumber(balance).plus(acc),
+                BigNumber(0),
+            );
+            console.log('BalanceProvider: Sum before division:', sum.toString());
+            let total = sum.dividedBy(1e9);
+            let formatedTotal = formatAmount(total);
+            console.log('BalanceProvider: Formatted total:', formatedTotal);
+            setBalance(+formatedTotal);
+            setIsLoading(false);
+            setisError(false);
+        } catch (err) {
+            console.error('BalanceProvider: Error fetching balance:', err);
+            setIsLoading(false);
+            setisError(true);
+        }
+    }, [address, client, COIN_TYPE]);
 
     const getCoin = (amount: number) => {
         let coin = coinArray.find((coin) => +coin.balance >= amount);
@@ -78,7 +89,7 @@ export const BalanceProvider = ({ children }: BalanceProviderProps) => {
         getCoin,
         getAllCoinsAsTxArgs,
         address,
-    }), [balance, isLoading, isError, reFetchData, getCoin, getAllCoinsAsTxArgs, address]);
+    }), [balance, isLoading, isError, reFetchData, address]);
 
     return (
         <BalanceContext.Provider value={contextValue}>

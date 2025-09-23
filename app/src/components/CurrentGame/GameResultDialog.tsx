@@ -107,13 +107,13 @@ export const GameResultDialog = ({
                                                 </div>
                                             </Button>
                                         )}
-                                        {/* <Button
+                                        <Button
                                             variant="outlined"
                                             size="small"
                                             onClick={onShowAllResultsDialog}
                                         >
                                             View Recent History
-                                        </Button> */}
+                                        </Button>
                                     </div>
                                 </div>
                             </>

@@ -67,7 +67,7 @@ export const useFaucet = () => {
                 await client.waitForTransaction({ digest: resp.data.txDigest, timeout: 10_000 });
             } else if (currentAccount?.address && FULL_NODE.includes('testnet')) {
                 // Use public Sui testnet faucet for regular wallets on testnet
-                const resp = await axios.post('https://faucet.testnet.sui.io/gas', {
+                const resp = await axios.post('https://faucet.testnet.sui.io/v2/gas', {
                     FixedAmountRequest: {
                         recipient: currentAccount.address
                     }

@@ -25,10 +25,8 @@ export const BalanceProvider = ({ children }: BalanceProviderProps) => {
 
     useEffect(() => {
         if (address) {
-            console.log('BalanceProvider: Address changed, fetching balance for:', address);
             reFetchData();
         } else {
-            console.log('BalanceProvider: No address, resetting balance');
             setBalance(0);
             setIsLoading(false);
             setisError(false);
@@ -37,33 +35,24 @@ export const BalanceProvider = ({ children }: BalanceProviderProps) => {
 
     const reFetchData = useCallback(async () => {
         if (!address) {
-            console.log('BalanceProvider: No address available for fetch');
             return;
         }
 
         setIsLoading(true);
-        console.log('BalanceProvider: Starting balance fetch for address:', address);
-        console.log('BalanceProvider: Using COIN_TYPE:', COIN_TYPE);
 
         try {
             const res = await client.getAllCoins({
                 owner: address,
             });
 
-            console.log('BalanceProvider: getAllCoins response:', res);
             setCoinArray(res.data);
             const coins = res.data.filter(({ coinType }) => coinType === COIN_TYPE);
-            console.log('BalanceProvider: Filtered coins for COIN_TYPE:', coins);
             const sum = coins.reduce(
                 (acc, { balance }) => BigNumber(balance).plus(acc),
                 BigNumber(0),
             );
-            console.log('BalanceProvider: Sum before division:', sum.toString());
             let total = sum.dividedBy(1e9);
             let numericTotal = total.toNumber();
-            let formatedTotal = formatAmount(total);
-            console.log('BalanceProvider: Numeric total:', numericTotal);
-            console.log('BalanceProvider: Formatted total:', formatedTotal);
             setBalance(numericTotal);
             setIsLoading(false);
             setisError(false);

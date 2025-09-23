@@ -15,21 +15,10 @@ export const Balance = () => {
     // Try to get address from multiple sources
     const address = balanceAddress || currentAccount?.address;
 
-    console.log('Balance debug:', {
-        balanceAddress,
-        currentAccountAddress: currentAccount?.address,
-        finalAddress: address,
-        balance,
-        balanceLoading,
-        isError,
-        currentAccount
-    });
-
     // Show balance component if we have any connected account, even if address is null
     const showBalance = address || currentAccount;
 
     if (!showBalance) {
-        console.log('No wallet connected, returning null');
         return null;
     }
 

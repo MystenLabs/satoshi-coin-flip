@@ -60,9 +60,11 @@ export const BalanceProvider = ({ children }: BalanceProviderProps) => {
             );
             console.log('BalanceProvider: Sum before division:', sum.toString());
             let total = sum.dividedBy(1e9);
+            let numericTotal = total.toNumber();
             let formatedTotal = formatAmount(total);
+            console.log('BalanceProvider: Numeric total:', numericTotal);
             console.log('BalanceProvider: Formatted total:', formatedTotal);
-            setBalance(+formatedTotal);
+            setBalance(numericTotal);
             setIsLoading(false);
             setisError(false);
         } catch (err) {

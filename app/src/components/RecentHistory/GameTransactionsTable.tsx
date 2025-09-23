@@ -13,7 +13,7 @@ interface GameTransactionsTableProps {
 }
 
 export const GameTransactionsTable = ({ gameId }: GameTransactionsTableProps) => {
-    const { data } = useGetTransactionsOfGame(gameId);
+    const { data, isLoading, isError } = useGetTransactionsOfGame(gameId);
     const { FULL_NODE: SUI_NETWORK } = useConfig({});
 
     const getSuiscanUrl = (txId: string) => {
@@ -41,6 +41,9 @@ export const GameTransactionsTable = ({ gameId }: GameTransactionsTableProps) =>
             </div>
         );
     };
+    if (isLoading) return <div className="text-center py-4">Loading transactions...</div>;
+    if (isError) return <div className="text-center py-4 text-red-500">Error loading transactions</div>;
+
     return (
         <table className="h-full w-full table-auto bg-gray-800">
             <tbody>

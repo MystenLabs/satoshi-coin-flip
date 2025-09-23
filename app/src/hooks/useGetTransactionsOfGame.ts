@@ -1,29 +1,36 @@
-import { getRandomId } from '../helpers/random';
 import { GameTransaction } from '../types/GameHistory';
+import { useOnChainHistory } from './useOnChainHistory';
 import { useMemo } from 'react';
 
 export const useGetTransactionsOfGame = (gameId: string) => {
-    const transactions = useMemo<GameTransaction[]>(
-        () => [
-            {
-                type: 'endGame',
-                id: getRandomId(),
-            },
-            {
+    const { data: allGames, isLoading, isError } = useOnChainHistory();
+
+    const transactions = useMemo<GameTransaction[]>(() => {
+        if (!gameId || !allGames) return [];
+
+        const game = allGames.find(g => g.id === gameId);
+        if (!game) return [];
+
+        const gameTransactions: GameTransaction[] = [];
+
+        gameTransactions.push({
+            type: 'newGame',
+            id: game.newGameTxDigest,
+        });
+
+        if (game.playGameTxDigest) {
+            gameTransactions.push({
                 type: 'playGame',
-                id: getRandomId(),
-            },
-            {
-                type: 'newGame',
-                id: getRandomId(),
-            },
-        ],
-        [gameId],
-    );
+                id: game.playGameTxDigest,
+            });
+        }
+
+        return gameTransactions;
+    }, [gameId, allGames]);
 
     return {
         data: transactions,
-        isLoading: false,
-        isError: false,
+        isLoading,
+        isError,
     };
 };

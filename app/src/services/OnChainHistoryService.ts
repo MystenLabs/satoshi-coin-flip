@@ -32,13 +32,14 @@ export class OnChainHistoryService {
             });
 
             // Create a map of game outcomes by game_id
-            const outcomeMap = new Map<string, { status: number; timestamp: string }>();
+            const outcomeMap = new Map<string, { status: number; timestamp: string; txDigest: string }>();
             for (const event of outcomeEvents.data) {
                 const outcomeData = event.parsedJson as { game_id: string; status: number };
                 if (outcomeData.game_id && !outcomeMap.has(outcomeData.game_id)) {
                     outcomeMap.set(outcomeData.game_id, {
                         status: outcomeData.status,
                         timestamp: new Date(parseInt(event.timestampMs!)).toISOString(),
+                        txDigest: event.id.txDigest,
                     });
                 }
             }
@@ -86,6 +87,8 @@ export class OnChainHistoryService {
                     result,
                     balanceChange,
                     userStake,
+                    newGameTxDigest: event.id.txDigest,
+                    playGameTxDigest: outcome?.txDigest || null,
                 });
             }
 

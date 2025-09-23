@@ -8,6 +8,8 @@ export interface GameHistory {
     dateCreated: string;
     dateEnded: string | null;
     userStake: number;
+    newGameTxDigest: string;
+    playGameTxDigest: string | null;
 }
 
 export type GameTransactionType = 'newGame' | 'playGame' | 'endGame';

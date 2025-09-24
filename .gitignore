@@ -1,7 +1,12 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+.idea
 
 # production
 **/build
+.env
+.env.production
+node_modules
+dist
 
 # debug
 **/sui.log.*
@@ -10,3 +15,10 @@ satoshi_flip/Move.lock
 # coverage files
 .coverage_map.mvcov
 .trace
+package_summaries
+
+# publish
+.env.local
+tx_res.json
+.publish.res.json
+

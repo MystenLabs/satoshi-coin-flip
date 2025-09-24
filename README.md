@@ -1,4 +1,4 @@
-# Time-locked Satoshi Coin Flip
+# Time-locked Satoshi Coin Flip [v1]
 
 We present a fair method to use the Sui blockchain to conduct a 50 / 50 game of chance. We model the example after a 2-sided coin flip with a 50% chance for each outcome, Tails or Heads.
 

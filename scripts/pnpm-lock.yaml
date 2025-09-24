@@ -1,0 +1,302 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    dependencies:
+      '@mysten/sui.js':
+        specifier: ~0.45.1
+        version: 0.45.1
+      '@types/node':
+        specifier: ^20.8.10
+        version: 20.19.15
+      dotenv:
+        specifier: ^16.1.4
+        version: 16.6.1
+      env-cmd:
+        specifier: ^10.1.0
+        version: 10.1.0
+    devDependencies:
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.2
+
+packages:
+
+  '@mysten/bcs@0.8.1':
+    resolution: {integrity: sha512-wSEdP7QEfGQdb34g+7R0f3OdRqrv88iIABfJVDVJ6IsGLYVILreh8dZfNpZNUUyzctiyhX7zB9e/lR5qkddFPA==}
+
+  '@mysten/sui.js@0.45.1':
+    resolution: {integrity: sha512-B6RKfBAR1yr3EvHyQzXgkyOGOXE7jUbgblyitK/25CGp4Uba4VHEZ/N5DCbiuTJdt2k1H42sSXqIGfYqHN+6Cw==}
+    engines: {node: '>=16'}
+    deprecated: This package has been renamed to @mysten/sui, please update to use the renamed package.
+
+  '@noble/curves@1.9.7':
+    resolution: {integrity: sha512-gbKGcRUYIjA3/zCCNaWDciTMFI0dCkvou3TL8Zmy5Nc7sJ47a0jtOeZoTaMxkuqRo9cRhjOdZJXegxYE5FN/xw==}
+    engines: {node: ^14.21.3 || >=16}
+
+  '@noble/hashes@1.8.0':
+    resolution: {integrity: sha512-jCs9ldd7NwzpgXDIf6P3+NrHh9/sD6CQdxHyjQI+h/6rDNo88ypBxxz45UDuZHz9r3tNz7N/VInSVoVdtXEI4A==}
+    engines: {node: ^14.21.3 || >=16}
+
+  '@open-rpc/client-js@1.8.1':
+    resolution: {integrity: sha512-vV+Hetl688nY/oWI9IFY0iKDrWuLdYhf7OIKI6U1DcnJV7r4gAgwRJjEr1QVYszUc0gjkHoQJzqevmXMGLyA0g==}
+
+  '@scure/base@1.2.6':
+    resolution: {integrity: sha512-g/nm5FgUa//MCj1gV09zTJTaM6KBAHqLN907YVQqf7zC49+DcO4B1so4ZX07Ef10Twr6nuqYEH9GEggFXA4Fmg==}
+
+  '@scure/bip32@1.7.0':
+    resolution: {integrity: sha512-E4FFX/N3f4B80AKWp5dP6ow+flD1LQZo/w8UnLGYZO674jS6YnYeepycOOksv+vLPSpgN35wgKgy+ybfTb2SMw==}
+
+  '@scure/bip39@1.6.0':
+    resolution: {integrity: sha512-+lF0BbLiJNwVlev4eKelw1WWLaiKXw7sSl8T6FvBlWkdX+94aGJ4o8XjUdlyhTCjd8c+B3KT3JfS8P0bLRNU6A==}
+
+  '@suchipi/femver@1.0.0':
+    resolution: {integrity: sha512-bprE8+K5V+DPX7q2e2K57ImqNBdfGHDIWaGI5xHxZoxbKOuQZn4wzPiUxOAHnsUr3w3xHrWXwN7gnG/iIuEMIg==}
+
+  '@types/node@20.19.15':
+    resolution: {integrity: sha512-W3bqcbLsRdFDVcmAM5l6oLlcl67vjevn8j1FPZ4nx+K5jNoWCh+FC/btxFoBPnvQlrHHDwfjp1kjIEDfwJ0Mog==}
+
+  base-x@4.0.1:
+    resolution: {integrity: sha512-uAZ8x6r6S3aUM9rbHGVOIsR15U/ZSc82b3ymnCPsT45Gk1DDvhDPdIgB5MrhirZWt+5K0EEPQH985kNqZgNPFw==}
+
+  bs58@5.0.0:
+    resolution: {integrity: sha512-r+ihvQJvahgYT50JD05dyJNKlmmSlMoOGwn1lCcEzanPglg7TxYjioQUYehQ9mAR/+hOSd2jRc/Z2y5UxBymvQ==}
+
+  commander@4.1.1:
+    resolution: {integrity: sha512-NOKm8xhkzAjzFx8B2v5OAHT+u5pRQc2UCa2Vq9jYL/31o2wi9mxBA7LIFs3sV5VSC49z6pEhfbMULvShKj26WA==}
+    engines: {node: '>= 6'}
+
+  cross-spawn@7.0.6:
+    resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
+    engines: {node: '>= 8'}
+
+  dotenv@16.6.1:
+    resolution: {integrity: sha512-uBq4egWHTcTt33a72vpSG0z3HnPuIl6NqYcTrKEg2azoEyl2hpW0zqlxysq2pK9HlDIHyHyakeYaYnSAwd8bow==}
+    engines: {node: '>=12'}
+
+  env-cmd@10.1.0:
+    resolution: {integrity: sha512-mMdWTT9XKN7yNth/6N6g2GuKuJTsKMDHlQFUDacb/heQRRWOTIZ42t1rMHnQu4jYxU1ajdTeJM+9eEETlqToMA==}
+    engines: {node: '>=8.0.0'}
+    hasBin: true
+
+  events@3.3.0:
+    resolution: {integrity: sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==}
+    engines: {node: '>=0.8.x'}
+
+  isexe@2.0.0:
+    resolution: {integrity: sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==}
+
+  isomorphic-fetch@3.0.0:
+    resolution: {integrity: sha512-qvUtwJ3j6qwsF3jLxkZ72qCgjMysPzDfeV240JHiGZsANBYd+EEuu35v7dfrJ9Up0Ak07D7GGSkGhCHTqg/5wA==}
+
+  isomorphic-ws@5.0.0:
+    resolution: {integrity: sha512-muId7Zzn9ywDsyXgTIafTry2sV3nySZeUDe6YedVd1Hvuuep5AsIlqK+XefWpYTyJG5e503F2xIuT2lcU6rCSw==}
+    peerDependencies:
+      ws: '*'
+
+  node-fetch@2.7.0:
+    resolution: {integrity: sha512-c4FRfUm/dbcWZ7U+1Wq0AwCyFL+3nt2bEw05wfxSz+DWpWsitgmSgYmy2dQdWyKC1694ELPqMs/YzUSNozLt8A==}
+    engines: {node: 4.x || >=6.0.0}
+    peerDependencies:
+      encoding: ^0.1.0
+    peerDependenciesMeta:
+      encoding:
+        optional: true
+
+  path-key@3.1.1:
+    resolution: {integrity: sha512-ojmeN0qd+y0jszEtoY48r0Peq5dwMEkIlCOu6Q5f41lfkswXuKtYrhgoTpLnyIcHm24Uhqx+5Tqm2InSwLhE6Q==}
+    engines: {node: '>=8'}
+
+  shebang-command@2.0.0:
+    resolution: {integrity: sha512-kHxr2zZpYtdmrN1qDjrrX/Z1rR1kG8Dx+gkpK1G4eXmvXswmcE1hTWBWYUzlraYw1/yZp6YuDY77YtvbN0dmDA==}
+    engines: {node: '>=8'}
+
+  shebang-regex@3.0.0:
+    resolution: {integrity: sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==}
+    engines: {node: '>=8'}
+
+  strict-event-emitter-types@2.0.0:
+    resolution: {integrity: sha512-Nk/brWYpD85WlOgzw5h173aci0Teyv8YdIAEtV+N88nDB0dLlazZyJMIsN6eo1/AR61l+p6CJTG1JIyFaoNEEA==}
+
+  superstruct@1.0.4:
+    resolution: {integrity: sha512-7JpaAoX2NGyoFlI9NBh66BQXGONc+uE+MRS5i2iOBKuS4e+ccgMDjATgZldkah+33DakBxDHiss9kvUcGAO8UQ==}
+    engines: {node: '>=14.0.0'}
+
+  tr46@0.0.3:
+    resolution: {integrity: sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==}
+
+  tweetnacl@1.0.3:
+    resolution: {integrity: sha512-6rt+RN7aOi1nGMyC4Xa5DdYiukl2UWCbcJft7YhxReBGQD7OAM8Pbxw6YMo4r2diNEA8FEmu32YOn9rhaiE5yw==}
+
+  typescript@5.9.2:
+    resolution: {integrity: sha512-CWBzXQrc/qOkhidw1OzBTQuYRbfyxDXJMVJ1XNwUHGROVmuaeiEm3OslpZ1RV96d7SKKjZKrSJu3+t/xlw3R9A==}
+    engines: {node: '>=14.17'}
+    hasBin: true
+
+  undici-types@6.21.0:
+    resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
+
+  webidl-conversions@3.0.1:
+    resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}
+
+  whatwg-fetch@3.6.20:
+    resolution: {integrity: sha512-EqhiFU6daOA8kpjOWTL0olhVOF3i7OrFzSYiGsEMB8GcXS+RrzauAERX65xMeNWVqxA6HXH2m69Z9LaKKdisfg==}
+
+  whatwg-url@5.0.0:
+    resolution: {integrity: sha512-saE57nupxk6v3HY35+jzBwYa0rKSy0XR8JSxZPwgLr7ys0IBzhGviA1/TUGJLmSVqs8pb9AnvICXEuOHLprYTw==}
+
+  which@2.0.2:
+    resolution: {integrity: sha512-BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA==}
+    engines: {node: '>= 8'}
+    hasBin: true
+
+  ws@7.5.10:
+    resolution: {integrity: sha512-+dbF1tHwZpXcbOJdVOkzLDxZP1ailvSxM6ZweXTegylPny803bFhA+vqBYw4s31NSAk4S2Qz+AKXK9a4wkdjcQ==}
+    engines: {node: '>=8.3.0'}
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: ^5.0.2
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
+
+snapshots:
+
+  '@mysten/bcs@0.8.1':
+    dependencies:
+      bs58: 5.0.0
+
+  '@mysten/sui.js@0.45.1':
+    dependencies:
+      '@mysten/bcs': 0.8.1
+      '@noble/curves': 1.9.7
+      '@noble/hashes': 1.8.0
+      '@open-rpc/client-js': 1.8.1
+      '@scure/bip32': 1.7.0
+      '@scure/bip39': 1.6.0
+      '@suchipi/femver': 1.0.0
+      events: 3.3.0
+      superstruct: 1.0.4
+      tweetnacl: 1.0.3
+    transitivePeerDependencies:
+      - bufferutil
+      - encoding
+      - utf-8-validate
+
+  '@noble/curves@1.9.7':
+    dependencies:
+      '@noble/hashes': 1.8.0
+
+  '@noble/hashes@1.8.0': {}
+
+  '@open-rpc/client-js@1.8.1':
+    dependencies:
+      isomorphic-fetch: 3.0.0
+      isomorphic-ws: 5.0.0(ws@7.5.10)
+      strict-event-emitter-types: 2.0.0
+      ws: 7.5.10
+    transitivePeerDependencies:
+      - bufferutil
+      - encoding
+      - utf-8-validate
+
+  '@scure/base@1.2.6': {}
+
+  '@scure/bip32@1.7.0':
+    dependencies:
+      '@noble/curves': 1.9.7
+      '@noble/hashes': 1.8.0
+      '@scure/base': 1.2.6
+
+  '@scure/bip39@1.6.0':
+    dependencies:
+      '@noble/hashes': 1.8.0
+      '@scure/base': 1.2.6
+
+  '@suchipi/femver@1.0.0': {}
+
+  '@types/node@20.19.15':
+    dependencies:
+      undici-types: 6.21.0
+
+  base-x@4.0.1: {}
+
+  bs58@5.0.0:
+    dependencies:
+      base-x: 4.0.1
+
+  commander@4.1.1: {}
+
+  cross-spawn@7.0.6:
+    dependencies:
+      path-key: 3.1.1
+      shebang-command: 2.0.0
+      which: 2.0.2
+
+  dotenv@16.6.1: {}
+
+  env-cmd@10.1.0:
+    dependencies:
+      commander: 4.1.1
+      cross-spawn: 7.0.6
+
+  events@3.3.0: {}
+
+  isexe@2.0.0: {}
+
+  isomorphic-fetch@3.0.0:
+    dependencies:
+      node-fetch: 2.7.0
+      whatwg-fetch: 3.6.20
+    transitivePeerDependencies:
+      - encoding
+
+  isomorphic-ws@5.0.0(ws@7.5.10):
+    dependencies:
+      ws: 7.5.10
+
+  node-fetch@2.7.0:
+    dependencies:
+      whatwg-url: 5.0.0
+
+  path-key@3.1.1: {}
+
+  shebang-command@2.0.0:
+    dependencies:
+      shebang-regex: 3.0.0
+
+  shebang-regex@3.0.0: {}
+
+  strict-event-emitter-types@2.0.0: {}
+
+  superstruct@1.0.4: {}
+
+  tr46@0.0.3: {}
+
+  tweetnacl@1.0.3: {}
+
+  typescript@5.9.2: {}
+
+  undici-types@6.21.0: {}
+
+  webidl-conversions@3.0.1: {}
+
+  whatwg-fetch@3.6.20: {}
+
+  whatwg-url@5.0.0:
+    dependencies:
+      tr46: 0.0.3
+      webidl-conversions: 3.0.1
+
+  which@2.0.2:
+    dependencies:
+      isexe: 2.0.0
+
+  ws@7.5.10: {}

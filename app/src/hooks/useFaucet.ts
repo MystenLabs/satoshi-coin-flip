@@ -15,8 +15,17 @@ export const useFaucet = () => {
     const [jwt, setJwt] = useState<string | null>(null);
     const url = `${FAUCET_API}/api/faucet`;
 
-    const wallets = useWallets().filter(isEnokiWallet);
-    const isEnokiConnected = wallets.length > 0 && currentAccount;
+    const allWallets = useWallets();
+    const wallets = allWallets.filter(isEnokiWallet);
+    const isEnokiConnected = currentAccount && allWallets.some(wallet =>
+        isEnokiWallet(wallet) && wallet.accounts.some(account => account.address === currentAccount.address)
+    );
+
+    console.log('Faucet debug:', {
+        currentAccount: currentAccount?.address,
+        allWallets: allWallets.map(w => ({ name: w.name, isEnoki: isEnokiWallet(w) })),
+        isEnokiConnected
+    });
 
     useEffect(() => {
         let active = true;

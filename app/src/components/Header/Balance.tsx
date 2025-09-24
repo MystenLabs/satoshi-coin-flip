@@ -34,7 +34,7 @@ export const Balance = () => {
             {!balanceLoading && balance > 0 && (
                 <div className="flex items-center justify-center space-x-2 rounded-full border-2 border-solid border-gray-700 px-5 py-3">
                     <Coin color="#FFD600" />
-                    <div className="font-bold">{balance} SUI</div>
+                    <div className="font-bold">{balance.toFixed(2)} SUI</div>
                 </div>
             )}
 

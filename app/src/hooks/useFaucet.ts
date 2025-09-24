@@ -21,11 +21,6 @@ export const useFaucet = () => {
         isEnokiWallet(wallet) && wallet.accounts.some(account => account.address === currentAccount.address)
     );
 
-    console.log('Faucet debug:', {
-        currentAccount: currentAccount?.address,
-        allWallets: allWallets.map(w => ({ name: w.name, isEnoki: isEnokiWallet(w) })),
-        isEnokiConnected
-    });
 
     useEffect(() => {
         let active = true;

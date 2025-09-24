@@ -55,7 +55,7 @@ export const Balance = () => {
                             title="Temporarily unavailable, send testnet SUI directly to your address from the Slush wallet"
                         >
                             Get SUI
-                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-black text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
+                            <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-3 py-2 bg-black text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
                                 Temporarily unavailable, send testnet SUI directly to your address from the Slush wallet
                             </div>
                         </div>

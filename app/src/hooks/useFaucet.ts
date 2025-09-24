@@ -94,5 +94,5 @@ export const useFaucet = () => {
         return Promise.resolve();
     };
 
-    return { requestSui, isLoading };
+    return { requestSui, isLoading, isEnokiConnected };
 };

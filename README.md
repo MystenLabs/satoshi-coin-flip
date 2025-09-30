@@ -1,114 +1,253 @@
-# Time-locked Satoshi Coin Flip [v1]
+# Satoshi Coin Flip [v2] - On-Chain Randomness Edition
 
-We present a fair method to use the Sui blockchain to conduct a 50 / 50 game of chance. We model the example after a 2-sided coin flip with a 50% chance for each outcome, Tails or Heads.
+A fair 50/50 coin flip game built on Sui blockchain, utilizing Sui's native on-chain randomness for secure and trustless gameplay. Players bet on Heads or Tails with provably fair outcomes, powered by Move smart contracts and a React frontend with integrated Enoki sponsorship.
 
-Kostas Chalkias, Chief Cryptographer at Mysten Labs, presented the theory behind this project at [GAM3R 2022](https://docs.google.com/presentation/d/1a9wddWhqKM4GXMV1UrhrpaH1sBMUxZWI/edit?usp=sharing&ouid=110032463750803153525&rtpof=true&sd=true).
+## What's New in V2
+
+V2 introduces significant architectural improvements:
+
+- **Sui On-Chain Randomness**: Uses Sui's built-in `random::Random` module for secure, trustless random number generation - eliminating the need for external VRF services
+- **Enoki Sponsorship Integration**: Implements [@mysten/enoki](https://www.npmjs.com/package/@mysten/enoki) for gas-free transactions via Vercel API routes
+- **Type-Safe Contract Bindings**: Auto-generated TypeScript bindings using [@mysten/codegen](https://www.npmjs.com/package/@mysten/codegen) for type-safe smart contract interactions
+- **Simplified Architecture**: Single-transaction game flow with no backend signing service required
 
 ## Satoshi Coin Flip Modules
 
 ### `house_data.move`
-Creates a singleton house data object and provides a method to initialize it with the house's public key and funds.<br/>
-This object is used in all game related operations.<br/>
-It also defines game restrictions such as min and max allowed stake.<br/>
-Operates as the house's treasury object that contains the house's staking balance as well as the fees collected from the games.<br/>
 
-### `counter_nft.move`
-This module defines the Counter NFT object and provides methods to create and increment it.<br/>
-The Counter NFT is used as the VRF input for every game that a player plays.<br/>
-The count always increases after use, ensuring a unique input for every game.<br/>
-A player is required to create a Counter NFT before playing their first game.<br/>
-The UI can seemlessly create the Counter NFT for the user by including the counter creation along with the game creation function in the same PTB.
+Creates a singleton house data object that manages the game's treasury and configuration.
+
+- Initializes house balance and game parameters (min/max stake, fees)
+- Operates as the house's treasury, holding staking balance and collected fees
+- Provides methods for house administration (top-up, withdraw, update parameters)
 
 ### `single_player_satoshi.move`
-Defines the game object and provides methods to create, end and dispute a game.
+
+Defines the core game logic for a single-player coin flip game.
+
+- **`start_game()`**: Creates a new game with player's guess (H/T) and stake
+- **`finish_game()`**: Determines winner using Sui's on-chain randomness and distributes funds
+- **`dispute_and_win()`**: Allows players to reclaim funds if game is not finished within `EPOCHS_CANCEL_AFTER` (7 epochs)
+
+Key features:
+- Uses dynamic object fields to store games within `HouseData`
+- Implements fee collection on winning games
+- Emits events for game creation (`NewGame`) and completion (`Outcome`)
 
 ### `mev_attack_resistant_single_player_satoshi.move`
-Similar to the `single_player_satoshi` module, but with the addition of the `submit_guess` function that is used to submit the guess and VRF input in a separate transaction.<br/>
-It also enforces status checks to ensure that the game is in the correct state before submit, end and dispute functions are called. <br/>
-More details about the differences between the two versions can be found in the [Satoshi Coin Flip Flavors](#satoshi-coin-flip-flavors) section.
-## Satoshi Coin Flip Flavors
 
-This repo contains two versions of the Satoshi Coin Flip contract. This enables use cases to implement whichever approach fits them best. UX and security have to be weighted in order to take an informed decision. 
+**Note**: This module is **no longer necessary** with on-chain randomness. It was designed to prevent MEV attacks when using backend VRF services. With Sui's native randomness, the standard `single_player_satoshi` module provides equivalent security with better UX.
 
-The two versions are:
-1. [**Single Player Satoshi**](#single-player-satoshi-smart-contract-flow): Provides better UX (1 user transaction per game) but is not as secure against a specific MEV attack (explained in the [MEV attack](#the-mev-attack) section).
-1. [**MEV attack resistant Single Player Satoshi**](#mev-attack-resistant-single-player-satoshi-smart-contract-flow): Provides slightly worse UX (2 user transactions per game) but is secure against the MEV attack.
+## Architecture
 
-### Single Player Satoshi: Smart Contract Flow
+### V2 Flow (On-Chain Randomness)
 
-The smart contract works for any one player. An entity called house acts as the game's organizer. A treasury object is used to submit the house's stake and is managed by the contract creator. <br/>
-Upon contract deployment, the house data are initialized with the house's public key. 
+```mermaid
+sequenceDiagram
+    participant Player as Player (Frontend)
+    participant Enoki as Enoki Sponsorship
+    participant API as Vercel API Routes
+    participant Sui as Sui Blockchain
+    participant Random as Sui On-Chain Random
 
-Prior to playing their first game, a user will be required to create a Counter NFT. <br/>
-This can be achieved by including in a PTB the Counter NFT creation along with the game creation function. <br/>
-Maintaining in this way a uniform UX for the user. <br/>
-For any subsequent game, the Counter NFT can just be passed in the game creation function. <br/>
-The Counter NFT's `ID` + `count` acts as the VRF input for every game that they play. <br/>
-The count always increases after use, ensuring a unique input for every game.
+    Note over Player, Random: Game Creation
+    Player->>Enoki: Request sponsorship for start_game
+    Enoki-->>Player: Sponsored transaction bytes
+    Player->>Sui: Execute start_game (guess + stake, sponsored)
+    Sui-->>Player: Game created with ID
 
-The player that starts the game submits their Counter NFT along with their choice of Tails or Heads. The guess has been purposely declared as a string, H for Heads and T for Tails respectively, so that user can verify their choice upon signing. Additionally, at this stage the player's & house's stake is submitted.
+    Note over Player, Random: Game Execution
+    Player->>Enoki: Request sponsorship for finish_game
+    Enoki-->>Player: Sponsored transaction bytes
+    Player->>Sui: Execute finish_game (sponsored)
+    Sui->>Random: Request on-chain randomness
+    Random-->>Sui: Cryptographically secure random bool
+    Note over Sui: Compare player guess with random result
+    Sui-->>Player: Funds distributed to winner
 
-Once the game has been created, anyone can end it by providing a valid BLS signature and the game id. The winner is determined by a bit of the hashed randomness beacon. The beacon is the result of BLS signing the `counterID` + `count` with the house's private key.
+    Note over Player, Sui: All randomness generated on-chain, trustless & verifiable
+```
 
-Fairness is ensured and verifiable by:
- 1. Player can not guess the house's private key
- 1. House can not predict the user's guess
- 1. Time-locking the game so that it is obliged to end after X number of epochs (X=7 in our example).
+### Comparison: V1 vs V2
 
-#### Global Architecture Diagram
-***Note:** The high level architecture remains the same for both Satoshi Coin Flip flavors.*
+| Feature | V1 (Backend VRF) | V2 (On-Chain Randomness) |
+|---------|------------------|--------------------------|
+| **Randomness Source** | Backend BLS signature | Sui on-chain `random::Random` |
+| **Backend Service** | Required (signing service) | Optional (only for sponsorship) |
+| **Transactions per Game** | 2 (create + finish) | 2 (create + finish) |
+| **Trust Model** | Trust backend with house key | Trustless, cryptographically secure |
+| **MEV Resistance** | Required 2-step flow | Built-in via on-chain randomness |
+| **Gas Fees** | Player pays | Sponsored by Enoki |
 
-![Global Proposed Architecture](/diagrams/Global%20Architecture%20Diagram.png)
+## Quickstart
 
-#### Single Player Satoshi: Sequence Diagram
-![SPS Sequence Flow Diagram](/diagrams/sequence_sps.png)
-### MEV attack resistant Single Player Satoshi: Smart Contract Flow
+### Prerequisites
+- Node.js 18+ and pnpm installed
+- Sui CLI installed and configured
+- Enoki API key (for sponsorship)
 
-#### The MEV attack
-In the above contract flow a malicious validator in cooperation with the house could front-run a user's new game transaction in order to drain the house's balance on player winning games. 
+### Setup
 
-This is possible in the following way:
-1. Player submits a transaction for execution with a winning guess. House is able to tell that this game is winning since the user provides stake, VRF inputs and their guess in the same transaction.
-1. House realizes this and because they are working with a leading validator they can slow down this user transaction.
-1. Before the user transaction gets to execute, the house executes a transaction to withdraw the house balance.
-1. This causes the user's transaction to fail since it won't find sufficient house funds to submit for the new game.
+1. **Navigate to setup directory**:
+   ```bash
+   cd setup/
+   npm i
+   ```
 
-#### The solution
-The contract is very similar to the original with the addition of one step.
-Instead of submitting the stake, VRF input and guess in the same transaction, we now do the following:
-1. Player and house submit their stake and create a new game.
-1. After this transaction has been verified by its effects & have confirmed that its block exists, the player then submits their guess along with the VRF input.
-1. Finally, once the above steps we can normally end the game or dispute it like before.
+2. **Configure environment variables** based on `setup/README.md`:
+   - `ADMIN_SECRET_KEY`: Admin wallet private key
+   - `NETWORK`: Sui network (testnet/mainnet)
+   - Other configuration per setup README
 
-**Why does the above flow solve the problem?**
+3. **Publish contracts and initialize house**:
+   ```bash
+   ./publish.sh testnet
+   npm run init-house  # Requires admin account to have 10+ SUI
+   ```
 
-Because the house no longer knows what the player is going to pick when the stake submition takes place. <br/>
-The house has already submitted the stake in the first transaction and can no longer drain the house's balance. 
-#### MEV Attack Resistant Single Player Satoshi: Sequence Diagram
-![SPS Sequence Flow Diagram](/diagrams/sequence_mev_sps.png)
-## Proposed UI Flows
+4. **Setup frontend**:
+   ```bash
+   cd ../app/
+   pnpm i
+   pnpm codegen  # Generate TypeScript bindings
+   pnpm run dev
+   ```
 
-The House assumes the role of the UI. Any player can join, connect a Sui-compatible wallet, and then start a new game by clicking **New Game**.
+### Environment Variables (Frontend)
 
-The player picks a Counter NFT and a coin of at least `X` MIST where `max_stake <= X <= min_stake`. This step can be abstracted from the player and chosen by the web application. The UI then asks the player to choose **Tails** or **Heads** (mapped internally as 0 or 1 respectively), to guess the predetermined bit. It then locks `X` MIST of the player's balance and another `X` MIST from the house's treasury.
+Create `app/.env.local` with:
+```bash
+VITE_ENOKI_PUBLIC_KEY=your_enoki_public_key
+VITE_ENOKI_PRIVATE_KEY=your_enoki_private_key
+VITE_NETWORK=testnet
+VITE_PACKAGE_ID=<published_package_id>
+VITE_HOUSE_DATA_ID=<house_data_object_id>
+```
 
-***Note:** In the case of the MEV attack resistant version, the player will be asked to submit their guess and VRF input in a separate transaction than the funds sumbission transaction.*
+## Gameplay
 
-To end the game, the House reveals the secret and then transfers `2*X` MIST to the winner, if `base_fee == 0`. If `base_fee > 0`, the House transfers `2*X - base_fee_amount` MIST to the winner and `base_fee_amount` MIST to the treasury.
-This is achieved by implementing the proposed back-end service as seen in the next section.
+1. **Connect Wallet**: Player connects their Sui-compatible wallet
+2. **Place Bet**:
+   - Choose Heads (H) or Tails (T)
+   - Submit stake (between `min_stake` and `max_stake`)
+   - Transaction is sponsored by Enoki (gas-free)
+3. **Finish Game**:
+   - Player (or anyone) calls `finish_game`
+   - On-chain randomness determines outcome
+   - Winner receives stake (minus fees if applicable)
+4. **Dispute** (Optional):
+   - If game is not finished within 7 epochs, player can call `dispute_and_win` to reclaim full stake
 
-The sample UI demonstrates our fairness claim: The human player can check the objects and transactions created on the chain at any point to verify that the signatures match and the outcome is correct and fair.
+### Fairness Guarantees
 
-## Proposed Back-end Service
+With on-chain randomness, fairness is cryptographically guaranteed:
 
-For the purposes of signing and revealing the beacon the house's private key must be kept somewhere safe. For this reason we propose a back-end service that is capable of hiding the private key from end users and is able to cleverly determine when to reveal the beacon: only after a game has been created. This can be checked by awaiting for the transaction block containing the gameId (or for the case of the MEV attack resistant version upon guess submission).
+1. **Unpredictable Randomness**: The random value is generated by Sui's secure randomness beacon, which cannot be predicted or manipulated
+2. **Transparent Verification**: All randomness generation happens on-chain and is verifiable in the transaction effects
+3. **Time-Lock Protection**: Games that aren't finished within 7 epochs can be disputed, ensuring funds aren't locked indefinitely
+4. **No Trust Required**: Unlike V1, no backend service holds cryptographic keys or can influence outcomes
 
-Another useful aspect of the back-end is to make the user experience better by initiating the end game transaction as the house. This way games that might not be closed can also be tracked and closed later with additional services  / cron jobs.
+## Project Structure
+
+```
+.
+├── satoshi_flip/              # Move smart contracts
+│   ├── sources/
+│   │   ├── house_data.move
+│   │   ├── single_player_satoshi.move
+│   │   └── mev_attack_resistant_single_player_satoshi.move (legacy)
+│   └── tests/
+├── app/                       # Frontend application
+│   ├── src/
+│   │   ├── __generated__/     # Auto-generated contract bindings (@mysten/codegen)
+│   │   ├── components/
+│   │   ├── hooks/
+│   │   ├── services/
+│   │   └── pages/
+│   └── api/                   # Vercel API routes for Enoki sponsorship
+│       ├── sponsor/
+│       │   ├── prepare.ts     # Prepare sponsored transaction
+│       │   └── execute.ts     # Execute sponsored transaction
+│       └── lib/
+│           ├── enokiClient.ts
+│           └── config.ts
+└── setup/                     # Deployment scripts
+    └── publish.sh
+```
+
+## Technical Details
+
+### On-Chain Randomness Implementation
+
+From `single_player_satoshi.move:108-114`:
+
+```move
+// Step 1: Generate secure randomness using Sui's native random.
+let mut generator = random::new_generator(random_state, ctx);
+let random_result = random::generate_bool(&mut generator);
+
+// Step 2: Determine winner.
+let player_guess_bool = map_guess(guess) == 0; // H = 0 = false, T = 1 = true
+let player_won = player_guess_bool == random_result;
+```
+
+The `random::Random` shared object provides cryptographically secure randomness through Sui's randomness beacon, eliminating the need for external VRF services.
+
+### Enoki Sponsorship
+
+Transaction sponsorship is handled via Vercel API routes:
+
+- **`/api/sponsor/prepare`**: Prepares a sponsored transaction with allowed move call targets
+- **`/api/sponsor/execute`**: Executes the sponsored transaction on behalf of the player
+
+Sponsored move calls include:
+- `single_player_satoshi::start_game`
+- `single_player_satoshi::finish_game`
+- Standard coin operations (`split`, `join`, `transfer`)
+
+### TypeScript Bindings
+
+Generated using `@mysten/codegen`:
+
+```bash
+pnpm codegen  # Reads sui-codegen.config.ts and generates TypeScript types
+```
+
+This creates type-safe functions for all Move contract interactions in `src/__generated__/`.
+
+## Security Considerations
+
+### On-Chain Randomness Benefits
+
+- **No Key Management**: No backend private keys to secure
+- **No MEV Risk**: Randomness is generated after the guess is committed on-chain
+- **Verifiable**: All randomness sources are recorded in transaction effects
+- **Censorship Resistant**: No backend can refuse to sign or delay transactions
+
+### Known Limitations
+
+- **Epoch Delay**: On-chain randomness requires a small delay (typically sub-second) for generation
+- **Gas Costs**: While sponsored by Enoki, on-chain randomness does add computational cost
+- **Dispute Window**: 7-epoch window for disputes means funds can be locked briefly
+
+## Migration from V1
+
+If you're migrating from V1 (backend VRF):
+
+1. **Remove Backend Service**: No signing service needed
+2. **Update Contract Calls**: Replace VRF-based `finish_game` with randomness-based version
+3. **Remove Counter NFT**: No longer needed for VRF input
+4. **Simplify Flow**: Use single-transaction `single_player_satoshi` module instead of MEV-resistant variant
 
 ## Disclaimer
 
-"Time-locked Satoshi Coin Flip" is intended to serve as general reference, is provided for informational purposes only and does not provide gambling endorsement, advice or recommendations. Users are responsible for their own gambling activities and decisions, including complying with applicable laws and regulations relating to gambling. We make no representations or warranties of any kind, express or implied, about the completeness, accuracy, reliability, suitability, or availability of the information provided by the "Time-locked Satoshi Coin Flip". We are not responsible for any legal consequences users of "Time-locked Satoshi Coin Flip" may face.
+"Satoshi Coin Flip" is intended to serve as a general reference and is provided for informational purposes only. It does not provide gambling endorsement, advice, or recommendations. Users are responsible for their own gambling activities and decisions, including complying with applicable laws and regulations relating to gambling. We make no representations or warranties of any kind, express or implied, about the completeness, accuracy, reliability, suitability, or availability of the information provided. We are not responsible for any legal consequences users may face.
 
 ## License
 
-"Time-locked Satoshi Coin Flip" is released under the [Apache 2.0 License](LICENSE).
+Released under the [Apache 2.0 License](LICENSE).
+
+## Acknowledgments
+
+- Original theory presented by Kostas Chalkias at [GAM3R 2022](https://docs.google.com/presentation/d/1a9wddWhqKM4GXMV1UrhrpaH1sBMUxZWI/edit?usp=sharing&ouid=110032463750803153525&rtpof=true&sd=true)
+- Built with [@mysten/sui](https://www.npmjs.com/package/@mysten/sui), [@mysten/dapp-kit](https://www.npmjs.com/package/@mysten/dapp-kit), and [@mysten/enoki](https://www.npmjs.com/package/@mysten/enoki)

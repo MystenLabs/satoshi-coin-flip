@@ -2,7 +2,7 @@
 export const serverConfig = {
   ENOKI_SECRET_KEY: process.env.ENOKI_SECRET_KEY,
   ENOKI_NETWORK: process.env.ENOKI_NETWORK || 'testnet',
-  PACKAGE_ID: process.env.VITE_PACKAGE_ID,
+  PACKAGE_ID: process.env.VITE_PACKAGE_ID_ADDR,
   ADMIN_ADDRESS: process.env.ADMIN_ADDRESS,
 };
 

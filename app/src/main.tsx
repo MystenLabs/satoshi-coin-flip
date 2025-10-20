@@ -7,11 +7,21 @@ import { RouterProvider } from 'react-router-dom';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { SuiClientProvider, WalletProvider } from '@mysten/dapp-kit';
 import { getFullnodeUrl } from '@mysten/sui/client';
+import { namedPackagesPlugin, Transaction } from '@mysten/sui/transactions';
 import { router } from './routes';
 import { RegisterEnokiWallets } from './components/RegisterEnokiWallets';
+import { getMvrCache } from '../mvr';
 
 const plausible = Plausible({});
 plausible.enableAutoPageviews();
+
+// Register MVR plugin globally
+const network = 'testnet';
+const mvrPlugin = namedPackagesPlugin({
+  url: `https://${network}.mvr.mystenlabs.com`,
+  overrides: getMvrCache(network),
+});
+Transaction.registerGlobalSerializationPlugin('namedPackagesPlugin', mvrPlugin);
 
 const queryClient = new QueryClient();
 
